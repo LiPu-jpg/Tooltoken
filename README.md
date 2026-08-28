@@ -1,0 +1,78 @@
+# Native Late-Bound Tool Registration
+
+This repository contains the public implementation of native late-bound tool
+registration. A shared encoder/compiler is trained once; a new executable API
+is then registered from one document forward pass, without API-specific
+optimizer updates or changes to the frozen model's static vocabulary rows.
+
+## Method
+
+For a query `x` and tool document `D`, the shared modules compute
+
+```text
+q_x = Q(x)
+h_D = E(D)
+(O_D, M_D, X_D) = C(h_D)
+```
+
+`O_D` contains dynamic output rows, `M_D` is optional read-back memory, and
+`X_D` is the exact immutable API identity and execution payload. At runtime a
+registry binds a physical address to this bundle:
+
+```text
+address -> (exact identity, document, output rows, memory, payload)
+```
+
+The selector writes `q_x dot O_D` into the ordinary language-model logit
+column for that address. If it wins, the registry resolves the address back to
+the same exact API. Physical IDs are addresses only; they are not learned
+semantic representations.
+
+The registration contract is:
+
+```text
+optimizer steps for a new API = 0
+API-specific learned parameters = 0
+document forwards per distinct API = 1
+static model/tokenizer rows changed = 0
+```
+
+## Repository layout
+
+- `src/latent_register/`: model, registry, data, training, evaluation, and
+  audit primitives.
+- `tests/`: unit and contract tests for identity, masking, metrics, and
+  registration invariants.
+- `docs/PROJECT.md`: paper scope, claims, and comparison boundaries.
+- `docs/PROTOCOL.md`: reproducibility and evidence rules.
+- `docs/protocols/BENCHMARK_PROTOCOL.md`: benchmark definitions and metric
+  conventions.
+
+Large model weights, benchmark dumps, qrels, prediction files, checkpoint
+artifacts, and cluster credentials are intentionally excluded. Supply those
+inputs locally and record their hashes when reproducing a run.
+
+## Installation
+
+Python 3.9 or newer is supported. Install the package and development tools:
+
+```bash
+python -m pip install -e .
+python -m pip install pytest
+python -m pytest -q
+```
+
+The core library uses PyTorch and Hugging Face Transformers. GPU training is
+optional for the unit-test suite.
+
+## Reproducibility
+
+Use a pinned model/tokenizer revision and an immutable input manifest. Keep
+training and evaluation splits disjoint at the exact API level. Report the
+candidate denominator, seed, model revision, source hash, and registration
+audit alongside every metric. Do not open sealed qrels or report partial
+scores before the complete artifact audit has passed.
+
+## License
+
+Released under the MIT License. See [`LICENSE`](LICENSE).
