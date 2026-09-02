@@ -43,14 +43,21 @@ static model/tokenizer rows changed = 0
   audit primitives.
 - `tests/`: unit and contract tests for identity, masking, metrics, and
   registration invariants.
+- `experiments/`: source-only snapshots for the current A100 ToolBench I1 and
+  L20 STQ staged runs, including their training/audit entrypoints and Slurm
+  contracts.
 - `docs/PROJECT.md`: paper scope, claims, and comparison boundaries.
 - `docs/PROTOCOL.md`: reproducibility and evidence rules.
 - `docs/protocols/BENCHMARK_PROTOCOL.md`: benchmark definitions and metric
   conventions.
+- `docs/EXPERIMENTS.md`: dated experiment ledger, failure analysis, and
+  evidence status.
+- `PAPER_TABLES_WORKING_2026-08-09.md`: evidence-bound paper table ledger;
+  pending or blocked cells are kept explicit.
 
 Large model weights, benchmark dumps, qrels, prediction files, checkpoint
-artifacts, and cluster credentials are intentionally excluded. Supply those
-inputs locally and record their hashes when reproducing a run.
+artifacts, run logs, and cluster credentials are intentionally excluded.
+Supply those inputs locally and record their hashes when reproducing a run.
 
 ## Installation
 

@@ -24,7 +24,6 @@ tests/test_slurm_seed_contract.py
 # Internal cluster ledgers and deployment notes are not part of the public release.
 docs/protocols/TOOLGEN_REPRODUCTION.md
 docs/protocols/EXPERIMENT_015.md
-docs/EXPERIMENTS.md
 src/latent_register/checkpoint_transfer_manifest.py
 src/latent_register/probe_distributed_broadcast.py
 tests/test_checkpoint_transfer_manifest.py

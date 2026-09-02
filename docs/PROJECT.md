@@ -55,6 +55,11 @@ identity -> logical slot -> physical ID 一一对应
 当前 STQ 主诊断冻结了 Qwen3-8B，只训练约 1,103 万个 Native retriever/compiler
 参数；它不是 backbone LoRA 结果。历史分支另行测试过 LoRA 和全参数监督微调的容量。
 
+当前 ToolBench I1 主实验采用两阶段共享训练：先冻结 base encoder，在完整训练 registry
+上优化共享 document compiler；再冻结 compiler 和训练工具 bundle，以普通词表加完整动态
+registry 的 causal CE 全参数训练 query/generation backbone。这个分阶段只划分共享参数的
+优化责任，不改变部署合同；测试 API 仍然没有专属训练步骤或参数。
+
 ### 为什么删除地址轮换
 
 物理 ID 只是数组下标。第一训练阶段中，它根本不进入前向计算；读回阶段中，只要标签和
