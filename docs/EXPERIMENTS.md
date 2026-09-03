@@ -1,5 +1,16 @@
 # 实验总账与当前状态
 
+## 2026-09-03 Native 1K closed-set 回归（最终审计）
+
+正式 Stage 2 全参数训练在四张 L20 上完成 993 步，checkpoint reload、盲测和 sealed
+aggregate 均通过。盲测阶段未读取 qrels，未见工具注册 optimizer steps 为 0；训练/测试
+query 文本交集为 0。结果：Hit@1/3/5 `86.21/90.62/91.95%`，exact MRR `88.82%`，
+NDCG@1/3/5 `86.21/88.79/89.34%`（1,000 候选、1,951 queries、240 target identities）。
+
+原盲测任务因遗漏外部 Native 源码的 `NATIVE_ROOT/src` 而导入失败；修复版只补充该
+`PYTHONPATH`，没有改变模型、数据、训练或评测协议。该结果是 Native 方法的 source-derived
+closed-set 诊断，不是官方 ToolScalER checkpoint 复现。
+
 ## 2026-09-02 Native STQ staged ablation v6 reload 修复后提交
 
 v5 Stage-L `78564` 已完整完成（4×L20，`L20006`，2:31:39，1,311 optimizer steps），

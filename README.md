@@ -59,6 +59,16 @@ Large model weights, benchmark dumps, qrels, prediction files, checkpoint
 artifacts, run logs, and cluster credentials are intentionally excluded.
 Supply those inputs locally and record their hashes when reproducing a run.
 
+## Latest audited diagnostic
+
+The current Native Qwen3-8B 1K closed-set regression used 1,000 candidate APIs,
+1,951 queries, and 240 target identities with disjoint train/test query text.
+After a blind-score import-path fix, the sealed aggregate passed with Hit@1
+86.21%, Hit@3 90.62%, Hit@5 91.95%, exact MRR 88.82%, and NDCG@5 89.34%.
+Registration used zero optimizer steps. This is a source-derived closed-set
+diagnostic, not an official ToolScalER reproduction; full evidence and large
+artifacts remain outside this public repository.
+
 ## Installation
 
 Python 3.9 or newer is supported. Install the package and development tools:
