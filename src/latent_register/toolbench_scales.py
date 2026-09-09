@@ -26,8 +26,10 @@ def embedding_scale(weight):
         # HF can enable ZeRO-3 from the distributed config even when the
         # Accelerate zero3_init_flag is false. Outside this context weight.data
         # may be a one-dimensional empty placeholder, whose norm is zero.
-        from deepspeed.zero import GatheredParameters
-        context = GatheredParameters([weight], modifier_rank=None)
+        # `zero` is a public attribute exported by deepspeed.__init__, not
+        # an importable `deepspeed.zero` subpackage in DeepSpeed 0.16.9.
+        from deepspeed import zero
+        context = zero.GatheredParameters([weight], modifier_rank=None)
     else:
         context = nullcontext()
     before = list(weight.shape)

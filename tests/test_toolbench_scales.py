@@ -34,7 +34,11 @@ def test_zero3_norm_is_measured_inside_gather_then_partition_is_restored(monkeyp
             yield
         finally:
             weight.data = torch.empty(0)
-    monkeypatch.setitem(sys.modules, 'deepspeed.zero', SimpleNamespace(GatheredParameters=gather))
+    # Match the installed public API. Making a fake deepspeed.zero package
+    # would hide the import error that previously failed before training.
+    monkeypatch.delitem(sys.modules, 'deepspeed.zero', raising=False)
+    monkeypatch.setitem(sys.modules, 'deepspeed',
+                        SimpleNamespace(zero=SimpleNamespace(GatheredParameters=gather)))
     value, profile = embedding_scale(weight)
     assert value == pytest.approx(17/3)
     assert entered == [True] and weight.shape == (0,)
