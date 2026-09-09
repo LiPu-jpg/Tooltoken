@@ -1,0 +1,46 @@
+{
+  "date": "2026-09-09",
+  "upstream_commit": "82510f93d4c1ac13575471e02ab4dd688e1cbe3d",
+  "validation_scope": "synthetic CPU implementation contracts, not benchmark performance",
+  "full_explicit_suite": {
+    "passed": 56,
+    "failed": 0
+  },
+  "after_final_checkpoint_changes": {
+    "passed": 2,
+    "deselected": 30,
+    "failed": 0
+  },
+  "environment": {
+    "python": "3.9",
+    "torch": "2.2.2",
+    "transformers": "4.57.6",
+    "accelerate": "1.10.1"
+  },
+  "actual_training_cli_test": {
+    "model": "random tiny Qwen3",
+    "device": "CPU",
+    "optimizer_updates": 2,
+    "checkpoint_reloaded": true
+  },
+  "not_validated": [
+    "8B",
+    "CUDA",
+    "multi-rank",
+    "DeepSpeed",
+    "real ToolBench training-source compatibility",
+    "official executor adapter",
+    "SoPR",
+    "memory semantic benefit"
+  ],
+  "file_sha256": {
+    "src/latent_register/model.py": "987373769a057d626a9c1bab9fe2084b99e8a4afce7a70c1dcfa35fdf56ab8a4",
+    "pyproject.toml": "5acac08cb6abc489e0f619424353d0d60755a5f21b8de5f29e0718676576630a",
+    "tests/test_toolbench_agent.py": "3a45b3b8854239e52d6d88c53a97f26f68c6e2408888ee87b57577d245647f60",
+    "src/latent_register/prepare_toolbench_agent.py": "543395b2236752b42690950d6885fbe91bedf842b599b0de88fa325618b04213",
+    "src/latent_register/toolbench_agent.py": "28f1d07654c3fb1c81c40af4008ec2a553b90dee3fcfc92fcb225e735030db66",
+    "src/latent_register/toolbench_checkpoint.py": "9b6723796855b6a218dae118e4d922b6dc66deacb601f74b8656c10d061a0872",
+    "src/latent_register/toolbench_data.py": "9689acc6de2687fbb87c467a4c6c67fce9ea3960d5e8fa16fbe87be9bc811991",
+    "src/latent_register/train_toolbench_agent.py": "1d178d41f5e5bf8419038675c5672dc5aa8de6c19b8f18fbfe73025ccf797112"
+  }
+}

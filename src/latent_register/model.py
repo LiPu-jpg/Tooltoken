@@ -54,9 +54,16 @@ class GeneratedVector(nn.Module):
         nn.init.zeros_(self.up.weight)
 
     def forward(self, latent: torch.Tensor) -> torch.Tensor:
-        residual = self.up(F.silu(self.down(self.norm(latent.float()))))
-        direction = F.normalize(latent.float() + residual, dim=-1)
-        return direction * self.log_output_norm.exp()
+        # Keep compiler arithmetic consistent when a distributed engine casts
+        # module parameters to BF16. Casting the input alone is insufficient.
+        with torch.autocast(device_type=latent.device.type, enabled=False):
+            value = latent.float()
+            normalized = F.layer_norm(value, self.norm.normalized_shape,
+                                      self.norm.weight.float(), self.norm.bias.float(), self.norm.eps)
+            residual = F.linear(F.silu(F.linear(normalized, self.down.weight.float())),
+                                self.up.weight.float())
+            direction = F.normalize(value + residual, dim=-1)
+            return direction * self.log_output_norm.float().exp()
 
 
 class GeneratedMemory(nn.Module):
@@ -390,16 +397,21 @@ class TokenResamplerMemory(nn.Module):
             value_states = token_states
         if value_states.shape != token_states.shape:
             raise ValueError("Value states must match token states")
-        keys = self.key(self.norm(token_states.float()))
-        scores = torch.einsum("sr,btr->bst", self.queries, keys) / self.rank**0.5
-        scores = scores.masked_fill(~attention_mask.bool().unsqueeze(1), float("-inf"))
-        weights = scores.softmax(dim=-1)
-        pooled = torch.einsum("bst,bth->bsh", weights, value_states.float())
-        residual = self.value_up(
-            F.silu(self.value_down(self.value_norm(pooled)))
-        )
-        direction = F.normalize(pooled + residual, dim=-1)
-        return direction * self.log_output_norm.exp()[None, :, None]
+        if not attention_mask.bool().any(dim=1).all():
+            raise ValueError("Every document must contain at least one unmasked token")
+        with torch.autocast(device_type=token_states.device.type, enabled=False):
+            normalized = F.layer_norm(token_states.float(), self.norm.normalized_shape,
+                                      self.norm.weight.float(), self.norm.bias.float(), self.norm.eps)
+            keys = F.linear(normalized, self.key.weight.float())
+            scores = torch.einsum("sr,btr->bst", self.queries.float(), keys) / self.rank**0.5
+            scores = scores.masked_fill(~attention_mask.bool().unsqueeze(1), float("-inf"))
+            pooled = torch.einsum("bst,bth->bsh", scores.softmax(dim=-1), value_states.float())
+            normalized = F.layer_norm(pooled, self.value_norm.normalized_shape,
+                                      self.value_norm.weight.float(), self.value_norm.bias.float(), self.value_norm.eps)
+            residual = F.linear(F.silu(F.linear(normalized, self.value_down.weight.float())),
+                                self.value_up.weight.float())
+            direction = F.normalize(pooled + residual, dim=-1)
+            return direction * self.log_output_norm.float().exp()[None, :, None]
 
 
 class PhysicalOutputGenerator(nn.Module):
