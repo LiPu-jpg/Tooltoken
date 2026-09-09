@@ -20,15 +20,25 @@ def main():
     args = parser.parse_args()
     local_rank = int(os.environ['LOCAL_RANK'])
     torch.cuda.set_device(local_rank)
-    dist.init_process_group('nccl')
+    # DeepSpeedConfig reads DeepSpeed's communicator wrapper. Initializing
+    # torch.distributed alone leaves that wrapper unset and reports world=1.
+    deepspeed.init_distributed(dist_backend='nccl', auto_mpi_discovery=False)
     try:
         rank, world = dist.get_rank(), dist.get_world_size()
         assert world == args.expected_world_size
+        assert deepspeed.comm.get_world_size() == world
+        assert deepspeed.comm.get_rank() == rank
         assert torch.cuda.is_bf16_supported()
         assert torch.cuda.get_device_properties(local_rank).total_memory >= 44 * 1024**3
         if rank == 0:
             args.output.mkdir(parents=True, exist_ok=False)
-        dist.barrier()
+        dist.barrier(device_ids=[local_rank])
+        (args.output / f'bootstrap-rank-{rank}.json').write_text(json.dumps({
+            'rank': rank, 'torch_world_size': world,
+            'deepspeed_world_size': deepspeed.comm.get_world_size(),
+            'gpu_name': torch.cuda.get_device_name(local_rank),
+            'gpu_memory_bytes': torch.cuda.get_device_properties(local_rank).total_memory,
+            'optimizer_updates': 0}, indent=2) + '\n')
         config = {'train_batch_size': world, 'train_micro_batch_size_per_gpu': 1,
                   'gradient_accumulation_steps': 1, 'bf16': {'enabled': True},
                   'zero_optimization': {'stage': 3,
@@ -67,7 +77,7 @@ def main():
             (args.output / 'VERIFIED.json').write_text(json.dumps(
                 {'passed': True, 'world_size': world, 'ranks': reports,
                  'scope': 'real tiny ZeRO-3 gather only; not 8B training certification'}, indent=2) + '\n')
-        dist.barrier()
+        dist.barrier(device_ids=[local_rank])
     finally:
         dist.destroy_process_group()
 
