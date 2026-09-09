@@ -115,10 +115,16 @@ def read_jsonl(path: str | Path) -> Iterable[dict]:
 
 
 def load_training_tools(path: str | Path) -> dict[str, ToolSpec]:
+    return load_tools(path, split="train")
+
+
+def load_tools(path: str | Path, *, split: str) -> dict[str, ToolSpec]:
+    if split not in {"train", "dev", "validation"}:
+        raise ValueError("Only explicitly selected train/development inputs are supported")
     result = {FINISH: finish_tool()}
     for row in read_jsonl(path):
-        if row.get("split") != "train":
-            raise ValueError("Use a training-only registry; held-out documents must not enter training")
+        if row.get("split") != split:
+            raise ValueError(f"Use a {split}-only registry; refusing cross-split documents")
         tool = ToolSpec(str(row["api_identity"]), row["document"], row["parameters"],
                         tuple(row.get("aliases", [])))
         if tool.api_identity in result:
@@ -165,9 +171,9 @@ def observation(identity: str, content: Any) -> dict:
     return {"type": "observation", "api_identity": identity, "content": content}
 
 
-def trajectory_steps(row: dict, tools: dict[str, ToolSpec], *, source_format: str) -> list[AgentStep]:
-    if row.get("split") != "train":
-        raise ValueError("Training entry point rejects non-train trajectories")
+def trajectory_steps(row: dict, tools: dict[str, ToolSpec], *, source_format: str, split: str = "train") -> list[AgentStep]:
+    if split not in {"train", "dev", "validation"} or row.get("split") != split:
+        raise ValueError("Trajectory does not match the explicitly selected train/development split")
     if source_format not in {"toolbench", "toolgen"}:
         raise ValueError("Choose the source format explicitly")
     aliases = alias_map(tools)
@@ -280,6 +286,10 @@ def trajectory_steps(row: dict, tools: dict[str, ToolSpec], *, source_format: st
 
 
 def load_training_steps(path: str | Path, tools: dict[str, ToolSpec], *, source_format: str) -> list[AgentStep]:
+    return load_steps(path, tools, source_format=source_format, split="train")
+
+
+def load_steps(path: str | Path, tools: dict[str, ToolSpec], *, source_format: str, split: str) -> list[AgentStep]:
     result: list[AgentStep] = []
     seen: set[str] = set()
     for row in read_jsonl(path):
@@ -287,7 +297,7 @@ def load_training_steps(path: str | Path, tools: dict[str, ToolSpec], *, source_
         if identity in seen:
             raise ValueError(f"Duplicate trajectory id: {identity}")
         seen.add(identity)
-        result.extend(trajectory_steps(row, tools, source_format=source_format))
+        result.extend(trajectory_steps(row, tools, source_format=source_format, split=split))
     if not result:
         raise ValueError("No training steps")
     return result

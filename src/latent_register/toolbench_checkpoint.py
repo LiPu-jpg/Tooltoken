@@ -36,7 +36,7 @@ def save_agent(agent: ToolBenchAgent, path: str | Path, *, metadata: dict,
     # not reversible. Preserve the actual runtime values and their dtype.
     buffers = {name: value.detach().cpu() for name, value in agent.backbone.named_buffers()}
     torch.save({"compilers": extra, "backbone_buffers": buffers}, output / "runtime.pt")
-    config = {"version": 1, "rank": agent.rank, "slots": agent.slots,
+    config = {"version": 2, "rank": agent.rank, "slots": agent.slots, "memory_compiler": agent.memory_config,
               "condition": agent.condition, "limits": asdict(agent.limits), "metadata": metadata}
     (output / "agent.json").write_text(json.dumps(config, indent=2, ensure_ascii=False) + "\n")
     manifest = {str(item.relative_to(output)): sha256(item) for item in sorted(output.rglob("*")) if item.is_file()}
@@ -51,13 +51,16 @@ def load_agent(path: str | Path, *, device: str = "cpu", torch_dtype: Any = "aut
         if not item.resolve().is_relative_to(root.resolve()) or sha256(item) != expected:
             raise ValueError(f"Checkpoint checksum failed: {relative}")
     config = json.loads((root / "agent.json").read_text())
-    if config["version"] != 1:
+    if config["version"] not in {1, 2}:
         raise ValueError("Unsupported checkpoint interface")
     tokenizer = AutoTokenizer.from_pretrained(root / "backbone", local_files_only=True)
     backbone = AutoModelForCausalLM.from_pretrained(root / "backbone", local_files_only=True,
                                                   torch_dtype=torch_dtype)
+    memory_config = (config["memory_compiler"] if config["version"] == 2 else
+                     {"kind": "legacy", "width": 512, "depth": 2, "heads": 8})
     agent = ToolBenchAgent(backbone, tokenizer, rank=config["rank"], slots=config["slots"],
-                           condition=config["condition"], limits=Limits(**config["limits"]))
+                           condition=config["condition"], limits=Limits(**config["limits"]),
+                           **{"memory_" + key: value for key, value in memory_config.items()})
     runtime = torch.load(root / "runtime.pt", map_location="cpu", weights_only=True)
     expected = {key for key in agent.state_dict() if not key.startswith("backbone.")}
     if set(runtime["compilers"]) != expected:

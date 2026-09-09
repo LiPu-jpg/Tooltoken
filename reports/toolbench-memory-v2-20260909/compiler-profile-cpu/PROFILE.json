@@ -1,0 +1,76 @@
+{
+  "scope": "compiler-only synthetic hidden states; excludes Qwen, tokenizer, schema parsing and caller",
+  "config": {
+    "output_dir": "reports/toolbench-memory-v2-20260909/compiler-profile-cpu",
+    "device": "cpu",
+    "hidden_size": 4096,
+    "width": 512,
+    "heads": 8,
+    "rank": 128,
+    "tokens": 256,
+    "fields": 16,
+    "repetitions": 5,
+    "cpu_threads": 1
+  },
+  "python": "3.9.6",
+  "torch": "2.2.2",
+  "machine": "arm64",
+  "optimizer_updates": 0,
+  "backbone_forwards": 0,
+  "records": [
+    {
+      "kind": "legacy",
+      "slots": 8,
+      "parameters": 1590280,
+      "parameter_bytes": 6361120,
+      "output_bytes": 131072,
+      "output_dtype": "torch.float32",
+      "median_seconds": 0.0007511250000000746,
+      "mean_seconds": 0.0007749581999999978,
+      "all_seconds": [
+        0.0007034160000000123,
+        0.0008702499999999613,
+        0.0008377499999999705,
+        0.0007511250000000746,
+        0.0007122499999999699
+      ],
+      "torch_peak_allocated_bytes": null
+    },
+    {
+      "kind": "structured",
+      "slots": 8,
+      "parameters": 13132808,
+      "parameter_bytes": 52531232,
+      "output_bytes": 131072,
+      "output_dtype": "torch.float32",
+      "median_seconds": 0.0037586250000000154,
+      "mean_seconds": 0.0037910997999999864,
+      "all_seconds": [
+        0.003878582999999991,
+        0.0037547909999999796,
+        0.003718249999999923,
+        0.0037586250000000154,
+        0.0038452500000000223
+      ],
+      "torch_peak_allocated_bytes": null
+    },
+    {
+      "kind": "structured",
+      "slots": 16,
+      "parameters": 13136912,
+      "parameter_bytes": 52547648,
+      "output_bytes": 262144,
+      "output_dtype": "torch.float32",
+      "median_seconds": 0.003961790999999937,
+      "mean_seconds": 0.003960008199999976,
+      "all_seconds": [
+        0.0038834580000000063,
+        0.003961790999999937,
+        0.004067332999999951,
+        0.003996416999999974,
+        0.003891042000000011
+      ],
+      "torch_peak_allocated_bytes": null
+    }
+  ]
+}

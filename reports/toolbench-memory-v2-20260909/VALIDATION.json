@@ -1,0 +1,262 @@
+{
+  "scope": "ToolBench memory-v2 implementation and local CPU verification; no 8B accuracy or end-to-end task-success claim",
+  "base_commit": "2233676df1c7246a5a0738a476041905879f18fa",
+  "branch": "native/toolbench-memory-v2",
+  "environment": {
+    "python": "3.9.6",
+    "machine": "arm64",
+    "torch": "2.2.2",
+    "transformers": "4.57.6",
+    "accelerate": "1.10.1",
+    "numpy": "1.26.4",
+    "jsonschema": "4.25.1"
+  },
+  "tests": {
+    "tests": 79,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 13.209,
+    "raw_junit_local": "reports/toolbench-memory-v2-20260909/cpu-tests-final.xml",
+    "raw_junit_sha256": "263956de9412b4140109aed998530c0e5a897e36c03de5e2244e25cbf65208d4",
+    "test_cases": [
+      "tests.test_toolbench_memory_v2::test_schema_targets_preserve_scope_types_null_and_references",
+      "tests.test_toolbench_memory_v2::test_layout_byte_identity_nested_and_unicode_field_spans",
+      "tests.test_toolbench_memory_v2::test_field_views_use_one_backbone_pass_and_exact_offsets",
+      "tests.test_toolbench_memory_v2::test_schema_only_prefix_has_no_query_identity_field_name_or_answer",
+      "tests.test_toolbench_memory_v2::test_schema_supervision_alone_updates_both_refinement_layers_and_shared_qwen",
+      "tests.test_toolbench_memory_v2::test_compiler_all_slots_gradients_padding_and_field_contribution[8]",
+      "tests.test_toolbench_memory_v2::test_compiler_all_slots_gradients_padding_and_field_contribution[16]",
+      "tests.test_toolbench_memory_v2::test_structured_compiler_bf16_and_empty_fields",
+      "tests.test_toolbench_memory_v2::test_checkpoint_architecture_and_zero_step_registration_roundtrip[structured-8]",
+      "tests.test_toolbench_memory_v2::test_checkpoint_architecture_and_zero_step_registration_roundtrip[structured-16]",
+      "tests.test_toolbench_memory_v2::test_checkpoint_architecture_and_zero_step_registration_roundtrip[legacy-8]",
+      "tests.test_toolbench_memory_v2::test_v1_checkpoint_load_keeps_legacy_compiler",
+      "tests.test_toolbench_memory_v2::test_required_type_enum_metrics_and_strict_json",
+      "tests.test_toolbench_memory_v2::test_different_contract_negative_control_and_empty_fact_guard",
+      "tests.test_toolbench_memory_v2::test_real_model_diagnostic_same_length_conditions_and_no_updates",
+      "tests.test_toolbench_memory_v2::test_argument_plan_is_generated_once_and_gold_thought_never_used",
+      "tests.test_toolbench_memory_v2::test_execution_receipts_do_not_claim_answer_correctness",
+      "tests.test_toolbench_memory_v2::test_development_cli_audits_split_and_exports_real_costs",
+      "tests.test_toolbench_memory_v2::test_recipes_differ_only_in_capacity_and_allow_explicit_override",
+      "tests.test_toolbench_memory_v2::test_preflight_measures_expanded_slots_and_all_schema_targets",
+      "tests.test_toolbench_memory_v2::test_same_query_can_require_a_document_only_constant",
+      "tests.test_toolbench_memory_v2::test_generation_failure_still_counts_elapsed_model_cost",
+      "tests.test_toolbench_memory_v2::test_full_document_baseline_does_not_compute_or_cache_unused_memory",
+      "tests.test_toolbench_agent::test_causal_trajectory_preserves_typed_arguments_and_observations",
+      "tests.test_toolbench_agent::test_bad_trajectories_fail_closed[heldout]",
+      "tests.test_toolbench_agent::test_bad_trajectories_fail_closed[observation]",
+      "tests.test_toolbench_agent::test_bad_trajectories_fail_closed[parallel]",
+      "tests.test_toolbench_agent::test_bad_trajectories_fail_closed[unfinished]",
+      "tests.test_toolbench_agent::test_bad_trajectories_fail_closed[unknown]",
+      "tests.test_toolbench_agent::test_bad_trajectories_fail_closed[system]",
+      "tests.test_toolbench_agent::test_toolgen_adapter_consumes_document_wrapper_without_answer_leak",
+      "tests.test_toolbench_agent::test_arguments_strict_json_not_stq_normalization[{\"a\":1,\"a\":2}]",
+      "tests.test_toolbench_agent::test_arguments_strict_json_not_stq_normalization[{\"a\":NaN}]",
+      "tests.test_toolbench_agent::test_arguments_strict_json_not_stq_normalization[{\"a\":1} junk]",
+      "tests.test_toolbench_agent::test_arguments_strict_json_not_stq_normalization[[\"Paris\"]]",
+      "tests.test_toolbench_agent::test_arguments_strict_json_not_stq_normalization[```json\\n{}\\n```]",
+      "tests.test_toolbench_agent::test_schema_requires_actual_nested_types_and_enum",
+      "tests.test_toolbench_agent::test_ambiguous_binding_and_heldout_registry_rejected",
+      "tests.test_toolbench_agent::test_duplicate_trajectory_ids_rejected",
+      "tests.test_toolbench_agent::test_real_qwen_joint_gradients_reach_backbone_and_both_compilers",
+      "tests.test_toolbench_agent::test_memory_slots_all_receive_argument_gradients",
+      "tests.test_toolbench_agent::test_frozen_backbone_updates_only_compilers",
+      "tests.test_toolbench_agent::test_limits_never_truncate_document_schema_or_target",
+      "tests.test_toolbench_agent::test_train_and_generate_first_logits_use_identical_expanded_prefix",
+      "tests.test_toolbench_agent::test_eos_and_truncation_distinguished",
+      "tests.test_toolbench_agent::test_zero_step_registration_one_forward_and_incremental_cache",
+      "tests.test_toolbench_agent::test_checkpoint_reload_retains_outputs_and_nonpersistent_buffers",
+      "tests.test_toolbench_agent::test_bf16_compilers_keep_finite_values_and_gradients",
+      "tests.test_toolbench_agent::test_runtime_history_feedback_finish_and_exact_identity",
+      "tests.test_toolbench_agent::test_runtime_call_budget_and_errors",
+      "tests.test_toolbench_agent::test_accumulation_tail_uses_real_window_size",
+      "tests.test_toolbench_agent::test_matched_baselines_train_independent_caller[full_document]",
+      "tests.test_toolbench_agent::test_matched_baselines_train_independent_caller[query_only]",
+      "tests.test_toolbench_agent::test_real_training_cli_flushes_partial_windows_and_exports_reloadable_model",
+      "tests.test_toolbench_agent::test_training_export_converter_round_trip_and_failure_evidence",
+      "tests.test_meta_readback.MetaReadbackTests::test_canonical_arguments_are_stable_and_compact",
+      "tests.test_meta_readback.MetaReadbackTests::test_epoch_batches_partition_equal_work_across_ranks",
+      "tests.test_meta_readback.MetaReadbackTests::test_full_vocabulary_evaluator_exposes_ordinary_token_competition",
+      "tests.test_meta_readback.MetaReadbackTests::test_full_vocabulary_logits_keep_base_words_and_replace_active_rows",
+      "tests.test_meta_readback.MetaReadbackTests::test_full_vocabulary_loss_penalizes_a_winning_base_token",
+      "tests.test_meta_readback.MetaReadbackTests::test_registration_bundle_uses_one_document_forward",
+      "tests.test_meta_readback.MetaReadbackTests::test_same_stream_emits_physical_id_and_reuses_prompt_cache",
+      "tests.test_meta_readback.MetaReadbackTests::test_same_stream_evaluator_counts_shared_and_dual_document_forwards",
+      "tests.test_meta_readback.MetaReadbackTests::test_same_stream_stops_when_an_ordinary_token_wins",
+      "tests.test_meta_readback.MetaReadbackTests::test_schema_target_is_empty_without_properties",
+      "tests.test_meta_readback.MetaReadbackTests::test_schema_target_uses_every_declared_property",
+      "tests.test_meta_readback.MetaReadbackTests::test_selection_batch_uses_one_size_for_multi_positive_rows",
+      "tests.test_meta_readback.MetaReadbackTests::test_slot_binding_is_deterministic_and_epoch_rebound",
+      "tests.test_meta_readback.MetaReadbackTests::test_wrong_memory_indices_always_choose_another_tool",
+      "tests.test_meta_readback.MetaReadbackTests::test_wrong_tool_lookup_is_deterministic_and_has_no_self_pairs",
+      "tests.test_meta_registration.MetaRegistrationTests::test_epoch_batches_give_ranks_equal_disjoint_work",
+      "tests.test_meta_registration.MetaRegistrationTests::test_multi_positive_loss_rewards_any_valid_tool",
+      "tests.test_meta_registration.MetaRegistrationTests::test_selection_statistics_uses_best_positive_rank",
+      "tests.test_meta_registration.MetaRegistrationTests::test_tokenization_applies_the_requested_document_instruction",
+      "tests.test_memory_oracle.MemoryOracleTests::test_adaptation_prompt_does_not_reuse_evaluation_query_or_arguments",
+      "tests.test_memory_oracle.MemoryOracleTests::test_distributed_assignment_partitions_tools",
+      "tests.test_memory_oracle.MemoryOracleTests::test_normalization_preserves_requested_slot_norm",
+      "tests.test_physical_tokens.PhysicalTokenIdentityAuditTests::test_records_atomic_unique_contiguous_mapping",
+      "tests.test_physical_tokens.PhysicalTokenIdentityAuditTests::test_rejects_duplicate_or_noncontiguous_ids"
+    ]
+  },
+  "requirement_checks": [
+    {
+      "requirement": "two_layer_shared_compiler",
+      "evidence_test_names": [
+        "test_schema_supervision_alone_updates_both_refinement_layers_and_shared_qwen",
+        "test_compiler_all_slots_gradients_padding_and_field_contribution"
+      ],
+      "status": "passed_local_cpu"
+    },
+    {
+      "requirement": "field_views_from_single_document_forward",
+      "evidence_test_names": [
+        "test_field_views_use_one_backbone_pass_and_exact_offsets",
+        "test_layout_byte_identity_nested_and_unicode_field_spans"
+      ],
+      "status": "passed_local_cpu"
+    },
+    {
+      "requirement": "schema_only_supervision_and_document_gradients",
+      "evidence_test_names": [
+        "test_schema_only_prefix_has_no_query_identity_field_name_or_answer",
+        "test_schema_targets_preserve_scope_types_null_and_references",
+        "test_schema_supervision_alone_updates_both_refinement_layers_and_shared_qwen"
+      ],
+      "status": "passed_local_cpu"
+    },
+    {
+      "requirement": "eight_sixteen_slot_capacity_control",
+      "evidence_test_names": [
+        "test_recipes_differ_only_in_capacity_and_allow_explicit_override",
+        "test_checkpoint_architecture_and_zero_step_registration_roundtrip"
+      ],
+      "status": "passed_local_cpu"
+    },
+    {
+      "requirement": "content_controls_and_failure_denominators",
+      "evidence_test_names": [
+        "test_real_model_diagnostic_same_length_conditions_and_no_updates",
+        "test_different_contract_negative_control_and_empty_fact_guard",
+        "test_required_type_enum_metrics_and_strict_json"
+      ],
+      "status": "passed_local_cpu"
+    },
+    {
+      "requirement": "execution_receipts_and_costs",
+      "evidence_test_names": [
+        "test_execution_receipts_do_not_claim_answer_correctness",
+        "test_generation_failure_still_counts_elapsed_model_cost",
+        "test_full_document_baseline_does_not_compute_or_cache_unused_memory"
+      ],
+      "status": "passed_local_cpu"
+    },
+    {
+      "requirement": "development_cli_and_compatibility",
+      "evidence_test_names": [
+        "test_development_cli_audits_split_and_exports_real_costs",
+        "test_v1_checkpoint_load_keeps_legacy_compiler"
+      ],
+      "status": "passed_local_cpu"
+    }
+  ],
+  "source_sha256": {
+    "README.md": "5b8564d69ec4f3387e15a126771ee7eb3825d1129b7ae86687d35693b71c6568",
+    "configs/toolbench-memory-v2-16.json": "252c983143dec5535fe4cefb661b33e9db56b09986bddf9aa687637820c95a31",
+    "configs/toolbench-memory-v2-8.json": "6253141e41506e0e4f1ad64a4067ade62cf6df225ebb65d88153ac84279007da",
+    "docs/TOOLBENCH_MEMORY_V2.md": "eb21fec4daa29828e718fe010927c78375c3f9a36200babc067a6ccf5f75d1af",
+    "pyproject.toml": "075a9872d11332cb015056d7fb6251d82130c371505c9b62057efa376fd1ff8b",
+    "src/latent_register/evaluate_toolbench_memory.py": "3702440643b8115e193e9519720738e5cb61685f43fabbae31d8cfce21dc5660",
+    "src/latent_register/profile_toolbench_compiler.py": "83ca22a43d2d99b6286917811d2f34cb6d8ff12decf7fb389d1df30bd15bf2c2",
+    "src/latent_register/structured_memory.py": "8005911486ab3e519299e55460aa6ea353d4030867f52720cf01c2658203eedf",
+    "src/latent_register/toolbench_agent.py": "4561a89fa504d672f950b3b009ce485e6b36774f8d9b1d77f8a04e4a8f8a5228",
+    "src/latent_register/toolbench_checkpoint.py": "1f74c5c81ba8a3fb01f0b96ef336813d423ca2900c722a146aadfbc23a884bd2",
+    "src/latent_register/toolbench_data.py": "8e035a57e232277567761d83ee4bc02ca6daea8997fd70a0365ebb7bf181e4e0",
+    "src/latent_register/toolbench_schema.py": "9bfd43b6d0a95b46945062eeb27829c84585b1838a153efc51d1deee4bcd6ec5",
+    "src/latent_register/train_toolbench_agent.py": "00fb4aa93132a5e6e3f592ea5f29abeafd9d5797b860d45ef1503aa1cb070e18",
+    "tests/test_toolbench_agent.py": "3b54c07a4cf4ae6b364cb2fabbb83f56652c0d1b2e9a763293e5ce9745d8a08b",
+    "tests/test_toolbench_memory_v2.py": "ba78602779142d6038b7ce27c385dce5de9a81a9259d593fa0248fbdd7e5d99d"
+  },
+  "compiler_only_profile": {
+    "path": "reports/toolbench-memory-v2-20260909/compiler-profile-cpu/PROFILE.json",
+    "sha256": "6b6b651673d6407d960400edfed872f766eadf1e287097f9eb0d71fd6c06495a",
+    "scope": "Measured CPU synthetic states, excludes Qwen/tokenization/parsing/caller",
+    "records": [
+      {
+        "kind": "legacy",
+        "slots": 8,
+        "parameters": 1590280,
+        "parameter_bytes": 6361120,
+        "output_bytes": 131072,
+        "output_dtype": "torch.float32",
+        "median_seconds": 0.0007511250000000746,
+        "mean_seconds": 0.0007749581999999978,
+        "all_seconds": [
+          0.0007034160000000123,
+          0.0008702499999999613,
+          0.0008377499999999705,
+          0.0007511250000000746,
+          0.0007122499999999699
+        ],
+        "torch_peak_allocated_bytes": null
+      },
+      {
+        "kind": "structured",
+        "slots": 8,
+        "parameters": 13132808,
+        "parameter_bytes": 52531232,
+        "output_bytes": 131072,
+        "output_dtype": "torch.float32",
+        "median_seconds": 0.0037586250000000154,
+        "mean_seconds": 0.0037910997999999864,
+        "all_seconds": [
+          0.003878582999999991,
+          0.0037547909999999796,
+          0.003718249999999923,
+          0.0037586250000000154,
+          0.0038452500000000223
+        ],
+        "torch_peak_allocated_bytes": null
+      },
+      {
+        "kind": "structured",
+        "slots": 16,
+        "parameters": 13136912,
+        "parameter_bytes": 52547648,
+        "output_bytes": 262144,
+        "output_dtype": "torch.float32",
+        "median_seconds": 0.003961790999999937,
+        "mean_seconds": 0.003960008199999976,
+        "all_seconds": [
+          0.0038834580000000063,
+          0.003961790999999937,
+          0.004067332999999951,
+          0.003996416999999974,
+          0.003891042000000011
+        ],
+        "torch_peak_allocated_bytes": null
+      }
+    ]
+  },
+  "not_run": [
+    "8B model training or loading",
+    "CUDA/DeepSpeed runtime",
+    "remote GPU jobs",
+    "real ToolBench unseen evaluation",
+    "paid executor/simulator/judge",
+    "SoPR",
+    "sealed test inputs"
+  ],
+  "remaining_research_validation": [
+    "Matched ToolBench development training comparing legacy-8, structured-8 and structured-16",
+    "Required-field omissions, type/enum errors, content controls and end-to-end outcomes",
+    "Actual GPU registration and caller cost with the shared trained backbone"
+  ],
+  "historical_source": {
+    "upstream_head": "82510f93d4c1ac13575471e02ab4dd688e1cbe3d",
+    "local_upstream_mirror_clean_at_review": true,
+    "v1_evidence_unchanged": true
+  }
+}

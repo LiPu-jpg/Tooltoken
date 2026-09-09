@@ -1,11 +1,12 @@
 # Native Late-Bound Tool Registration
 
-**ToolBench training fork:** see [the ToolBench training review and runnable
-interface](docs/TOOLBENCH_AGENT_TRAINING.md). This branch adds full-trajectory
-joint training of the shared backbone, selection compiler and memory compiler,
-plus a matching serial caller. It preserves the upstream experiments as
-historical snapshots. The new path has synthetic CPU validation; it has no
-new 8B ToolBench, SoPR, or GPU performance result.
+**ToolBench memory v2:** see [the structured compiler, schema supervision,
+8/16-slot recipes and development diagnostics](docs/TOOLBENCH_MEMORY_V2.md).
+The original [v1 training audit](docs/TOOLBENCH_AGENT_TRAINING.md) describes
+commit `2233676`; its validation record remains historical. V2 jointly trains
+the shared backbone, selection compiler and a two-layer memory compiler.
+The new path has synthetic CPU validation; it has no new 8B ToolBench, SoPR,
+or GPU performance result. Upstream experiment snapshots remain unchanged.
 
 This repository contains the public implementation of native late-bound tool
 registration. A shared encoder/compiler is trained once; a new executable API

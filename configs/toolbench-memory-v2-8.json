@@ -1,0 +1,16 @@
+{
+  "memory_kind": "structured",
+  "memory_width": 512,
+  "memory_depth": 2,
+  "memory_heads": 8,
+  "memory_slots": 8,
+  "schema_weight": 0.5,
+  "schema_tasks_per_step": 1,
+  "train_mode": "full",
+  "condition": "memory",
+  "candidate_count": 8,
+  "compiler_rank": 128,
+  "thought_weight": 0.2,
+  "learning_rate": 0.00001,
+  "compiler_learning_rate": 0.0001
+}

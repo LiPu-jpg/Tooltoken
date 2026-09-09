@@ -65,7 +65,8 @@ def agent():
         num_hidden_layers=2, num_attention_heads=4, num_key_value_heads=2, head_dim=8,
         max_position_embeddings=4096, tie_word_embeddings=False, attention_dropout=0.0,
         eos_token_id=1, pad_token_id=2))
-    return ToolBenchAgent(model, tokenizer, rank=8, slots=8, limits=Limits(2048, 512, 512))
+    return ToolBenchAgent(model, tokenizer, rank=8, slots=8, limits=Limits(2048, 512, 512),
+                          memory_width=32, memory_heads=4)
 
 
 def test_causal_trajectory_preserves_typed_arguments_and_observations(row, tools):
@@ -302,6 +303,7 @@ def test_real_training_cli_flushes_partial_windows_and_exports_reloadable_model(
         "--trajectories", str(trajectories), "--source-format", "toolbench", "--output-dir", str(output),
         "--model-path", str(base), "--model-role", "base", "--epochs", "2",
         "--gradient-accumulation-steps", "3", "--compiler-rank", "8", "--candidate-count", "3",
+        "--memory-width", "32", "--memory-heads", "4", "--schema-tasks-per-step", "5",
         "--max-context-length", "2048", "--max-document-length", "512", "--max-target-length", "512"]
     environment = {**os.environ, "ACCELERATE_USE_CPU": "true", "OMP_NUM_THREADS": "1",
         "HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1", "CUDA_VISIBLE_DEVICES": ""}
@@ -311,6 +313,9 @@ def test_real_training_cli_flushes_partial_windows_and_exports_reloadable_model(
     reloaded = load_agent(output / "checkpoint")
     assert not torch.equal(agent.backbone.get_input_embeddings().weight, reloaded.backbone.get_input_embeddings().weight)
     assert all(not parameter.requires_grad for parameter in reloaded.parameters())
+    metadata = json.loads((output / "checkpoint" / "agent.json").read_text())
+    assert metadata["memory_compiler"]["depth"] == 2
+    assert set(metadata["metadata"]["schema_task_exposures"].values()) == {4}
 
 
 def test_training_export_converter_round_trip_and_failure_evidence(row, tools, tmp_path):
