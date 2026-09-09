@@ -38,6 +38,10 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument("--output-dir", type=Path, required=True)
     p.add_argument("--audit-only", action="store_true", help="Audit data without loading model weights")
     p.add_argument("--model-path")
+    p.add_argument("--continue-from-export", type=Path,
+                   help="Load all parent model/compiler weights; explicitly reset optimizer and data order")
+    p.add_argument("--save-training-state-every", type=int, default=0,
+                   help="Save full Accelerator state every N new updates and at the end; 0 disables")
     p.add_argument("--model-role", choices=["base", "warm-start"])
     p.add_argument("--revision", help="Pin the base model revision when loading from the Hub")
     p.add_argument("--warm-start-manifest", type=Path, help="JSON with exact train_api_identities for ALL prior stages")
@@ -144,6 +148,10 @@ def main() -> None:
         raise ValueError("Invalid schema supervision settings")
     if args.max_train_seconds is not None and args.max_train_seconds <= 0:
         raise ValueError("Training time budget must be positive")
+    if args.save_training_state_every < 0:
+        raise ValueError("Training-state interval must be nonnegative")
+    if args.continue_from_export and (args.retrieval_adapter or args.retrieval_compiler or args.model_path or args.model_role):
+        raise ValueError("A serving export supplies all model/compiler weights; do not mix other warm starts")
     tools = load_training_tools(args.tools)
     steps = load_training_steps(args.trajectories, tools, source_format=args.source_format)
     audit = {
@@ -161,6 +169,11 @@ def main() -> None:
     }
     if args.recipe:
         audit["recipe_sha256"] = sha256(args.recipe)
+    continuation = None
+    if args.continue_from_export:
+        from .toolbench_continuation import inspect_continuation
+        continuation = inspect_continuation(args.continue_from_export, args, audit)
+        audit["continuation"] = continuation
     if args.retrieval_adapter or args.retrieval_compiler or args.model_role == "warm-start":
         if args.warm_start_manifest is None or args.model_role != "warm-start":
             raise ValueError("Warm-start artifacts require their combined training API lineage")
@@ -182,28 +195,34 @@ def main() -> None:
     if args.audit_only:
         accelerator.print(json.dumps({"status": "data_audited", "steps": len(steps)}))
         return
-    if not args.model_path or not args.model_role:
+    if not args.continue_from_export and (not args.model_path or not args.model_role):
         raise ValueError("Training requires an explicit model-path and model-role")
-    if not Path(args.model_path).exists() and not re.fullmatch(r"[0-9a-f]{40}", args.revision or ""):
+    if not args.continue_from_export and not Path(args.model_path).exists() and not re.fullmatch(r"[0-9a-f]{40}", args.revision or ""):
         raise ValueError("Pin the remote model revision")
     set_seed(args.seed)
-    tokenizer = AutoTokenizer.from_pretrained(args.model_path, revision=args.revision)
+    tokenizer_path = args.continue_from_export / "backbone" if args.continue_from_export else args.model_path
+    tokenizer = AutoTokenizer.from_pretrained(tokenizer_path, revision=args.revision)
     lengths = audit_token_lengths(tokenizer, tools, steps, limits=Limits(args.max_context_length,
         args.max_document_length, args.max_target_length), slots=args.memory_slots,
         condition=args.condition, schema_enabled=args.schema_weight > 0)
     if accelerator.is_main_process:
         (args.output_dir / "token_length_audit.json").write_text(json.dumps(lengths, indent=2) + "\n")
-    backbone = AutoModelForCausalLM.from_pretrained(args.model_path, revision=args.revision)
-    if args.retrieval_adapter:
-        from peft import PeftModel
-        backbone = PeftModel.from_pretrained(backbone, args.retrieval_adapter).merge_and_unload()
-    backbone.requires_grad_(args.train_mode == "full")
-    if args.gradient_checkpointing:
-        backbone.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
-    model = ToolBenchAgent(backbone, tokenizer, rank=args.compiler_rank, slots=args.memory_slots,
-                           condition=args.condition, limits=Limits(args.max_context_length,
-                           args.max_document_length, args.max_target_length), memory_kind=args.memory_kind,
-                           memory_width=args.memory_width, memory_depth=args.memory_depth, memory_heads=args.memory_heads)
+    if args.continue_from_export:
+        from .toolbench_continuation import load_trainable_agent
+        model = load_trainable_agent(args.continue_from_export, train_mode=args.train_mode,
+                                    gradient_checkpointing=args.gradient_checkpointing)
+    else:
+        backbone = AutoModelForCausalLM.from_pretrained(args.model_path, revision=args.revision)
+        if args.retrieval_adapter:
+            from peft import PeftModel
+            backbone = PeftModel.from_pretrained(backbone, args.retrieval_adapter).merge_and_unload()
+        backbone.requires_grad_(args.train_mode == "full")
+        if args.gradient_checkpointing:
+            backbone.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
+        model = ToolBenchAgent(backbone, tokenizer, rank=args.compiler_rank, slots=args.memory_slots,
+                               condition=args.condition, limits=Limits(args.max_context_length,
+                               args.max_document_length, args.max_target_length), memory_kind=args.memory_kind,
+                               memory_width=args.memory_width, memory_depth=args.memory_depth, memory_heads=args.memory_heads)
     if args.retrieval_compiler:
         model.output_compiler.load_state_dict(torch.load(args.retrieval_compiler, map_location="cpu", weights_only=True))
     groups = [{"params": [parameter for name, parameter in model.named_parameters()
@@ -232,11 +251,40 @@ def main() -> None:
             raise ValueError("Prepared DeepSpeed engine violates the training batch contract")
     (args.output_dir / f"runtime-rank-{accelerator.process_index}.json").write_text(json.dumps(runtime, indent=2) + "\n")
     updates_per_epoch = math.ceil(len(loader) / args.gradient_accumulation_steps)
-    total_updates = updates_per_epoch * args.epochs
+    initial_updates = continuation["parent_updates"] if continuation else 0
+    total_updates = initial_updates + updates_per_epoch * args.epochs
     if args.max_updates is not None:
         total_updates = min(total_updates, args.max_updates)
-    scheduler = get_cosine_schedule_with_warmup(optimizer, int(args.warmup_ratio * total_updates), total_updates)
-    updates = 0
+    remaining_updates = total_updates - initial_updates
+    scheduler = get_cosine_schedule_with_warmup(optimizer, int(args.warmup_ratio * remaining_updates), remaining_updates)
+    if continuation:
+        if (runtime["world_size"] != continuation["parent_world_size"]
+                or args.batch_size * args.gradient_accumulation_steps * runtime["world_size"] != continuation["parent_effective_full_batch"]):
+            raise ValueError("Continuation world size or effective batch differs from parent")
+    from .toolbench_continuation import RuntimeTrainingState
+    training_state = RuntimeTrainingState(accelerator.unwrap_model(model), {
+        "data_sha256": audit["source_sha256"], "continuation": continuation,
+        "seed": args.seed, "world_size": accelerator.num_processes,
+        "batch_size": args.batch_size, "accumulation": args.gradient_accumulation_steps,
+        "new_updates_planned": remaining_updates,
+    })
+    accelerator.register_for_checkpointing(scheduler, training_state)
+    updates = initial_updates
+    def save_training_state(epoch, next_batch):
+        training_state.cursor = {"epoch": epoch, "next_microbatch": next_batch,
+                                 "cumulative_updates": updates, "new_updates": updates - initial_updates}
+        output = args.output_dir / "training-state" / f"update-{updates}"
+        exists = torch.tensor(int(output.exists()), device=accelerator.device)
+        if accelerator.reduce(exists, reduction="sum").item():
+            raise FileExistsError("Never overwrite an earlier training state")
+        accelerator.save_state(str(output))
+        accelerator.wait_for_everyone()
+        if accelerator.is_main_process:
+            # Large parameter/optimizer shards are authenticated after saving.
+            files = {str(p.relative_to(output)): sha256(p) for p in sorted(output.rglob("*")) if p.is_file()}
+            (output / "READY.json").write_text(json.dumps({"cursor": training_state.cursor, "files": files,
+                "includes_model_optimizer_scheduler_rng_and_buffers": True}, indent=2) + "\n")
+        accelerator.wait_for_everyone()
     started = time.monotonic()
     stop_reason = "requested_updates_or_epochs"
     time_exhausted = False
@@ -279,6 +327,10 @@ def main() -> None:
                             "stop_reason": stop_reason if time_exhausted else None}) + "\n")
                         with (args.output_dir / "training.jsonl").open("a") as handle:
                             handle.write(json.dumps(record) + "\n")
+                    if args.save_training_state_every and (
+                            (updates - initial_updates) % args.save_training_state_every == 0
+                            or updates >= total_updates or time_exhausted):
+                        save_training_state(epoch, index + 1)
                     if updates >= total_updates or time_exhausted:
                         break
         if updates >= total_updates or time_exhausted:
