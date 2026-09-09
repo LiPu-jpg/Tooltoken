@@ -13,6 +13,7 @@ from pathlib import Path
 from .toolbench_agent import run_serial_agent
 from .toolbench_checkpoint import load_agent, sha256
 from .toolbench_data import FINISH, compact, load_tools, read_jsonl
+from .toolbench_eval_format import convert_trace, evaluator_names
 
 
 def load_queries(path: Path, split: str) -> list[dict]:
@@ -39,11 +40,14 @@ class DecisionPolicy:
 
 
 def run_panel(agent, tools, queries, factory, config, bindings, output: Path, *, max_calls=8,
-              thought_tokens=1024, argument_tokens=1024):
+              thought_tokens=1024, argument_tokens=1024, export_tooleval=False):
     output.mkdir(parents=True, exist_ok=False)
+    if export_tooleval:
+        names = evaluator_names(tools, bindings)
+        (output / "evaluation_identity_map.json").write_text(json.dumps(names, ensure_ascii=False, indent=2) + "\n")
     agent.register_tools(list(tools.values()), profile=True)
     policy = DecisionPolicy(agent, thought_tokens, argument_tokens)
-    counts = Counter()
+    counts, converted = Counter(), {}
     with (output / "episodes.jsonl").open("x") as handle:
         for query in queries:
             # Reset the executor's episode state. No gold API, argument, result
@@ -52,10 +56,19 @@ def run_panel(agent, tools, queries, factory, config, bindings, output: Path, *,
             if not callable(execute): raise TypeError("Executor factory must return (exact_identity, arguments) -> result")
             trace = run_serial_agent(policy, query["query"], tools, execute, max_calls=max_calls)
             handle.write(compact({"id": query["id"], "trace": trace}) + "\n"); handle.flush()
+            if export_tooleval:
+                converted[query["id"]] = convert_trace(query["query"], trace, tools, bindings)
             counts[trace["status"]] += 1
+            (output / "progress.json").write_text(compact({"completed_episodes": sum(counts.values()),
+                                                          "total_episodes": len(queries)}) + "\n")
     report = dict(episodes=len(queries), statuses=dict(counts), registration=agent.registration_profiles,
                   budgets=dict(max_calls=max_calls, thought_tokens=thought_tokens, argument_tokens=argument_tokens),
-                  task_success_judged=False, official_sopr=False, oracle_tool_or_observation=False)
+                  task_success_judged=False, official_sopr=False, oracle_tool_or_observation=False,
+                  backend_kind=config.get("backend_kind", "explicit_external_factory"),
+                  backend_revision=config.get("backend_revision"),
+                  adaptation_gate_passed=False)
+    if export_tooleval:
+        (output / "tooleval_answers.json").write_text(json.dumps(converted, ensure_ascii=False, indent=2) + "\n")
     (output / "REPORT.json").write_text(json.dumps(report, indent=2) + "\n")
     return report
 
@@ -81,13 +94,20 @@ def main():
     module_name, function_name=args.executor_factory.split(":",1)
     module=importlib.import_module(module_name); factory=getattr(module,function_name)
     config=json.loads(args.executor_config.read_text())
+    # Fail configuration/binding checks before allocating the 8B model.
+    evaluator_names(tools, bindings)
+    if not callable(factory(query_id=queries[0]["id"], config=config, tool_bindings=bindings)):
+        raise TypeError("Executor factory must return a callable")
     agent=load_agent(args.checkpoint,device=args.device)
     report=run_panel(agent,tools,queries,factory,config,bindings,args.output_dir,max_calls=args.max_calls,
-        thought_tokens=args.max_thought_tokens,argument_tokens=args.max_argument_tokens)
+        thought_tokens=args.max_thought_tokens,argument_tokens=args.max_argument_tokens,export_tooleval=True)
     provenance=dict(checkpoint_manifest_sha256=sha256(args.checkpoint/"SHA256.json"),
         tools_sha256=sha256(args.tools),queries_sha256=sha256(args.queries),
         executor_factory=args.executor_factory,executor_source_sha256=sha256(Path(module.__file__)),
-        executor_config_sha256=sha256(args.executor_config),split=args.split,optimizer_updates=0)
+        executor_config_sha256=sha256(args.executor_config),split=args.split,optimizer_updates=0,
+        runner_source_sha256=sha256(Path(__file__)),
+        agent_source_sha256=sha256(Path(__file__).with_name("toolbench_agent.py")),
+        format_source_sha256=sha256(Path(__file__).with_name("toolbench_eval_format.py")))
     (args.output_dir/"PROVENANCE.json").write_text(json.dumps(provenance,indent=2)+"\n")
     print(json.dumps({"episodes":report["episodes"],"task_success_judged":False}))
 

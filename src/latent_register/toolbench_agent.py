@@ -60,6 +60,14 @@ class ExecutionResult:
     """Optional executor receipt; success means execution, not answer quality."""
     content: Any
     success: bool | None = None
+    metadata: dict | None = None
+
+
+class GenerationFailure(ValueError):
+    def __init__(self, message, *, stage, text, identity=None, thought=None):
+        super().__init__(message)
+        self.details = {"stage": stage, "generated_text": text,
+                        "api_identity": identity, "thought": thought}
 
 
 def prompt_parts(tokenizer: Any, history: tuple[dict, ...] | list[dict], task: str,
@@ -329,7 +337,7 @@ class ToolBenchAgent(nn.Module):
         self.register_tools(list(tools.values()))
         thought = self.generate(self.prefix(history, "thought"), max_new_tokens=max_thought_tokens)
         if thought.truncated:
-            raise ValueError("Planning generation truncated")
+            raise GenerationFailure("Planning generation truncated", stage="thought", text=thought.text)
         identities = sorted(tools)
         rows = torch.stack([self._registry[identity][1] for identity in identities])
         scores = self.selection_scores(history, thought.text, rows)[0]
@@ -339,8 +347,13 @@ class ToolBenchAgent(nn.Module):
                              document=tools[identity].registration_document)
         generated = self.generate(prefix, max_new_tokens=max_argument_tokens)
         if generated.truncated:
-            raise ValueError("Arguments generation truncated")
-        arguments = tools[identity].validate_arguments(strict_json(generated.text))
+            raise GenerationFailure("Arguments generation truncated", stage="arguments", text=generated.text,
+                                    identity=identity, thought=thought.text)
+        try:
+            arguments = tools[identity].validate_arguments(strict_json(generated.text))
+        except ValueError as exc:
+            raise GenerationFailure(str(exc), stage="arguments", text=generated.text,
+                                    identity=identity, thought=thought.text) from exc
         return Decision(identity, arguments, thought.text, ranking)
 
 
@@ -353,23 +366,27 @@ def run_serial_agent(agent: ToolBenchAgent, query: str, tools: dict[str, ToolSpe
     if max_calls < 1:
         raise ValueError("max_calls must be positive")
     history = [{"type": "user", "content": query}]
+    receipts = []
     costs = dict(model_seconds=0.0, executor_seconds=0.0, model_decisions=0, tool_calls_attempted=0,
                  executions_succeeded=0, executions_failed=0, executions_without_receipt=0)
     def finish(result: dict) -> dict:
-        return {**result, "costs": dict(costs), "task_success_judged": False}
+        return {**result, "costs": dict(costs), "execution_receipts": list(receipts), "task_success_judged": False}
     for index in range(max_calls + 1):
         start = agent._clock(True) if hasattr(agent, "_clock") else time.perf_counter()
         costs["model_decisions"] += 1
         error = None
+        details = None
         try:
             decision = agent.decide(history, tools)
         except (ValueError, RuntimeError) as exc:
             error = str(exc)
+            details = getattr(exc, "details", None)
         finally:
             end = agent._clock(True) if hasattr(agent, "_clock") else time.perf_counter()
             costs["model_seconds"] += end - start
         if error is not None:
-            return finish({"status": "generation_error", "error": error, "history": history})
+            return finish({"status": "generation_error", "error": error,
+                           "generation_failure": details, "history": history})
         if decision.api_identity == FINISH:
             history.extend(call_history(decision.thought, FINISH, decision.arguments))
             return finish({"status": decision.arguments["return_type"], "result": decision.arguments, "history": history})
@@ -385,6 +402,9 @@ def run_serial_agent(agent: ToolBenchAgent, query: str, tools: dict[str, ToolSpe
                     raise ValueError("Executor receipt success must be bool or None")
                 costs["executions_succeeded" if result.success is True else "executions_failed"
                       if result.success is False else "executions_without_receipt"] += 1
+                if result.metadata is not None:
+                    compact(result.metadata)
+                    receipts.append(result.metadata)
                 result = result.content
             else:
                 costs["executions_without_receipt"] += 1
