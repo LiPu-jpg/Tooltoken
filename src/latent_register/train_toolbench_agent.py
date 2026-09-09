@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import time
 import re
 from collections import Counter
 from pathlib import Path
@@ -62,6 +63,8 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument("--memory-heads", type=int, default=8)
     p.add_argument("--schema-weight", type=float, default=0.5)
     p.add_argument("--schema-tasks-per-step", type=int, default=1)
+    p.add_argument("--max-train-seconds", type=float, help="Stop after a synchronized update and export before the scheduler deadline")
+    p.add_argument("--expected-world-size", type=int, help="Require this actual distributed world size")
     p.add_argument("--max-context-length", type=int, default=6144)
     p.add_argument("--max-document-length", type=int, default=2048)
     p.add_argument("--max-target-length", type=int, default=1024)
@@ -139,6 +142,8 @@ def main() -> None:
         raise ValueError("Keep selection and planning supervision active")
     if args.schema_weight < 0 or not 1 <= args.schema_tasks_per_step <= 5:
         raise ValueError("Invalid schema supervision settings")
+    if args.max_train_seconds is not None and args.max_train_seconds <= 0:
+        raise ValueError("Training time budget must be positive")
     tools = load_training_tools(args.tools)
     steps = load_training_steps(args.trajectories, tools, source_format=args.source_format)
     audit = {
@@ -209,12 +214,32 @@ def main() -> None:
     loader = DataLoader(steps, batch_size=args.batch_size, shuffle=True, collate_fn=list,
                         generator=torch.Generator().manual_seed(args.seed))
     model, optimizer, loader = accelerator.prepare(model, optimizer, loader)
+    if args.expected_world_size is not None and accelerator.num_processes != args.expected_world_size:
+        raise ValueError("Actual distributed world size differs from the requested allocation")
+    runtime = {"rank": accelerator.process_index, "world_size": accelerator.num_processes,
+               "device": str(accelerator.device), "distributed_type": str(accelerator.distributed_type),
+               "mixed_precision": accelerator.mixed_precision,
+               "trainable_backbone_parameters": sum(p.numel() if not hasattr(p, "ds_numel") else p.ds_numel
+                   for name, p in accelerator.unwrap_model(model).named_parameters() if name.startswith("backbone.") and p.requires_grad)}
+    if accelerator.device.type == "cuda":
+        runtime.update(gpu_name=torch.cuda.get_device_name(accelerator.device),
+                       gpu_memory_bytes=torch.cuda.get_device_properties(accelerator.device).total_memory)
+    if hasattr(model, "train_micro_batch_size_per_gpu"):
+        runtime.update(engine_microbatch=model.train_micro_batch_size_per_gpu(),
+                       engine_accumulation=model.gradient_accumulation_steps(), engine_global_batch=model.train_batch_size())
+        if (runtime["engine_microbatch"] != args.batch_size or runtime["engine_accumulation"] != args.gradient_accumulation_steps
+                or runtime["engine_global_batch"] != args.batch_size * args.gradient_accumulation_steps * accelerator.num_processes):
+            raise ValueError("Prepared DeepSpeed engine violates the training batch contract")
+    (args.output_dir / f"runtime-rank-{accelerator.process_index}.json").write_text(json.dumps(runtime, indent=2) + "\n")
     updates_per_epoch = math.ceil(len(loader) / args.gradient_accumulation_steps)
     total_updates = updates_per_epoch * args.epochs
     if args.max_updates is not None:
         total_updates = min(total_updates, args.max_updates)
     scheduler = get_cosine_schedule_with_warmup(optimizer, int(args.warmup_ratio * total_updates), total_updates)
     updates = 0
+    started = time.monotonic()
+    stop_reason = "requested_updates_or_epochs"
+    time_exhausted = False
     schema_exposures: Counter = Counter()
     optimizer.zero_grad(set_to_none=True)
     model.train()
@@ -240,14 +265,23 @@ def main() -> None:
                 if accelerator.sync_gradients and not accelerator.optimizer_step_was_skipped:
                     scheduler.step()
                     updates += 1
+                    elapsed = time.monotonic() - started
+                    if args.max_train_seconds is not None:
+                        flag = torch.tensor(int(elapsed >= args.max_train_seconds), device=accelerator.device)
+                        time_exhausted = bool(accelerator.reduce(flag, reduction="sum").item())
+                    if time_exhausted:
+                        stop_reason = "training_time_budget_export"
                     record = {"update": updates, "epoch": epoch, "rank0_last_microbatch_losses":
                               {key: float(value.detach()) for key, value in losses.items()}}
                     if accelerator.is_main_process:
+                        (args.output_dir / "progress.json").write_text(json.dumps({"updates": updates,
+                            "target_updates": total_updates, "training_elapsed_seconds": elapsed,
+                            "stop_reason": stop_reason if time_exhausted else None}) + "\n")
                         with (args.output_dir / "training.jsonl").open("a") as handle:
                             handle.write(json.dumps(record) + "\n")
-                    if updates >= total_updates:
+                    if updates >= total_updates or time_exhausted:
                         break
-        if updates >= total_updates:
+        if updates >= total_updates or time_exhausted:
             break
     accelerator.wait_for_everyone()
     exposures = accelerator.reduce(torch.tensor([schema_exposures[task] for task in SCHEMA_TASKS],
@@ -260,8 +294,11 @@ def main() -> None:
             "train_mode": args.train_mode, "development_or_test_evaluated": False,
             "schema_weight": args.schema_weight, "schema_task_exposures": dict(zip(SCHEMA_TASKS, exposures)),
             "token_length_maxima": lengths,
+            "stop_reason": stop_reason, "target_updates": total_updates,
+            "training_elapsed_seconds": time.monotonic() - started,
         }, state_dict=state)
-        (args.output_dir / "TRAINING_COMPLETE.json").write_text(json.dumps({"updates": updates}) + "\n")
+        (args.output_dir / "TRAINING_COMPLETE.json").write_text(json.dumps({"updates": updates,
+            "target_updates": total_updates, "stop_reason": stop_reason}) + "\n")
     accelerator.wait_for_everyone()
 
 
