@@ -37,7 +37,8 @@ def save_agent(agent: ToolBenchAgent, path: str | Path, *, metadata: dict,
     buffers = {name: value.detach().cpu() for name, value in agent.backbone.named_buffers()}
     torch.save({"compilers": extra, "backbone_buffers": buffers}, output / "runtime.pt")
     config = {"version": 2, "rank": agent.rank, "slots": agent.slots, "memory_compiler": agent.memory_config,
-              "condition": agent.condition, "limits": asdict(agent.limits), "metadata": metadata}
+              "condition": agent.condition, "limits": asdict(agent.limits), "metadata": metadata,
+              "scale_initialization": agent.scale_initialization}
     (output / "agent.json").write_text(json.dumps(config, indent=2, ensure_ascii=False) + "\n")
     manifest = {str(item.relative_to(output)): sha256(item) for item in sorted(output.rglob("*")) if item.is_file()}
     (output / "SHA256.json").write_text(json.dumps(manifest, indent=2) + "\n")

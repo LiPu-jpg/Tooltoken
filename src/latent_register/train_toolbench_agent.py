@@ -236,6 +236,7 @@ def main() -> None:
     if args.expected_world_size is not None and accelerator.num_processes != args.expected_world_size:
         raise ValueError("Actual distributed world size differs from the requested allocation")
     runtime = {"rank": accelerator.process_index, "world_size": accelerator.num_processes,
+               "compiler_scale_initialization": accelerator.unwrap_model(model).scale_initialization,
                "device": str(accelerator.device), "distributed_type": str(accelerator.distributed_type),
                "mixed_precision": accelerator.mixed_precision,
                "trainable_backbone_parameters": sum(p.numel() if not hasattr(p, "ds_numel") else p.ds_numel

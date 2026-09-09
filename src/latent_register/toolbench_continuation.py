@@ -36,6 +36,7 @@ def inspect_continuation(path: Path, args, audit: dict) -> dict:
     return {
         "parent_checkpoint": str(path.resolve()), "parent_manifest_sha256": sha256(path / "SHA256.json"),
         "parent_updates": updates, "target_cumulative_updates": args.max_updates,
+        "parent_initialization_repair": parent.get("initialization_repair"),
         "optimizer_restored": False, "scheduler_restored": False, "rng_restored": False,
         "data_order": "new seeded pass over the same training split; previous examples may repeat",
         "parent_world_size": parent.get("world_size"),
