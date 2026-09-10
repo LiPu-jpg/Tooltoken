@@ -42,6 +42,12 @@ class Generation:
     text: str
     token_ids: tuple[int, ...]
     stopped_on_eos: bool
+    requested_max_new_tokens: int | None = None
+    effective_max_new_tokens: int | None = None
+
+    def budget(self) -> dict:
+        return {"requested_max_new_tokens": self.requested_max_new_tokens,
+                "effective_max_new_tokens": self.effective_max_new_tokens}
 
     @property
     def truncated(self) -> bool:
@@ -54,6 +60,7 @@ class Decision:
     arguments: dict
     thought: str
     ranked_identities: tuple[str, ...]
+    generation_budgets: dict | None = None
 
 
 @dataclass(frozen=True)
@@ -65,10 +72,14 @@ class ExecutionResult:
 
 
 class GenerationFailure(ValueError):
-    def __init__(self, message, *, stage, text, identity=None, thought=None):
+    def __init__(self, message, *, stage, text, identity=None, thought=None,
+                 reason=None, generation=None, ranking=()):
         super().__init__(message)
         self.details = {"stage": stage, "generated_text": text,
-                        "api_identity": identity, "thought": thought}
+                        "api_identity": identity, "thought": thought, "reason": reason,
+                        "generation_budget": generation.budget() if generation is not None else None,
+                        "ranked_identities_top5": list(ranking[:5]),
+                        "finish_rank": ranking.index(FINISH) + 1 if FINISH in ranking else None}
 
 
 def prompt_parts(tokenizer: Any, history: tuple[dict, ...] | list[dict], task: str,
@@ -315,20 +326,28 @@ class ToolBenchAgent(nn.Module):
     def generate(self, prefix: torch.Tensor, *, max_new_tokens: int) -> Generation:
         if self.training:
             raise ValueError("Generation requires eval mode")
-        if max_new_tokens < 1 or prefix.shape[1] + max_new_tokens > self.limits.context:
-            raise ValueError("Generation budget exceeds the available context")
+        if max_new_tokens < 1:
+            raise ValueError("Generation budget must be positive")
+        available = self.limits.context - prefix.shape[1]
+        if available < 1:
+            raise ValueError("No generation positions remain in the available context")
+        # A requested maximum is an upper bound, not a reservation. Never cut
+        # the prompt or accept a response that fails to reach EOS in this budget.
+        effective_budget = min(max_new_tokens, available)
         output = self._hidden(inputs_embeds=prefix, use_cache=True)
         ids: list[int] = []
-        for _ in range(max_new_tokens):
+        for _ in range(effective_budget):
             logits = self.backbone.get_output_embeddings()(output.last_hidden_state[:, -1])
             token = int(logits.argmax(-1).item())
             if token == self.tokenizer.eos_token_id:
-                return Generation(self.tokenizer.decode(ids, skip_special_tokens=False), tuple(ids), True)
+                return Generation(self.tokenizer.decode(ids, skip_special_tokens=False), tuple(ids), True,
+                                  max_new_tokens, effective_budget)
             ids.append(token)
-            if len(ids) < max_new_tokens:
+            if len(ids) < effective_budget:
                 output = self._hidden(input_ids=self._ids([token]).unsqueeze(0),
                                       past_key_values=output.past_key_values, use_cache=True)
-        return Generation(self.tokenizer.decode(ids, skip_special_tokens=False), tuple(ids), False)
+        return Generation(self.tokenizer.decode(ids, skip_special_tokens=False), tuple(ids), False,
+                          max_new_tokens, effective_budget)
 
     @torch.no_grad()
     def decide(self, history: list[dict], tools: dict[str, ToolSpec], *, max_thought_tokens: int = 128,
@@ -337,9 +356,11 @@ class ToolBenchAgent(nn.Module):
             raise ValueError("Serving registry must include Finish")
         alias_map(tools)
         self.register_tools(list(tools.values()))
-        thought = self.generate(self.prefix(history, "thought"), max_new_tokens=max_thought_tokens)
+        thought_prefix = self.prefix(history, "thought")
+        thought = self.generate(thought_prefix, max_new_tokens=max_thought_tokens)
         if thought.truncated:
-            raise GenerationFailure("Planning generation truncated", stage="thought", text=thought.text)
+            raise GenerationFailure("Planning generation truncated", stage="thought", text=thought.text,
+                                    reason="truncated", generation=thought)
         identities = sorted(tools)
         rows = torch.stack([self._registry[identity][1] for identity in identities])
         scores = self.selection_scores(history, thought.text, rows)[0]
@@ -350,30 +371,41 @@ class ToolBenchAgent(nn.Module):
         generated = self.generate(prefix, max_new_tokens=max_argument_tokens)
         if generated.truncated:
             raise GenerationFailure("Arguments generation truncated", stage="arguments", text=generated.text,
-                                    identity=identity, thought=thought.text)
+                                    identity=identity, thought=thought.text, reason="truncated",
+                                    generation=generated, ranking=ranking)
         try:
             arguments = tools[identity].validate_arguments(strict_json(generated.text))
         except ValueError as exc:
             raise GenerationFailure(str(exc), stage="arguments", text=generated.text,
-                                    identity=identity, thought=thought.text) from exc
-        return Decision(identity, arguments, thought.text, ranking)
+                                    identity=identity, thought=thought.text, reason="invalid_arguments",
+                                    generation=generated, ranking=ranking) from exc
+        return Decision(identity, arguments, thought.text, ranking,
+                        {"thought": thought.budget(), "arguments": generated.budget(),
+                         "thought_prefix_tokens": thought_prefix.shape[1],
+                         "argument_prefix_tokens": prefix.shape[1]})
 
 
 def run_serial_agent(agent: ToolBenchAgent, query: str, tools: dict[str, ToolSpec],
-                     execute: Callable[[str, dict], Any], *, max_calls: int = 16) -> dict:
+                     execute: Callable[[str, dict], Any], *, max_calls: int = 16,
+                     max_validation_retries: int = 0) -> dict:
     """External execution is an explicit callback; this module has no API client.
 
     The returned trace is a local diagnostic, NOT an official SoPR score file.
     """
     if max_calls < 1:
         raise ValueError("max_calls must be positive")
+    if type(max_validation_retries) is not int or max_validation_retries < 0:
+        raise ValueError("max_validation_retries must be a nonnegative integer")
     history = [{"type": "user", "content": query}]
     receipts = []
+    decisions = []
     costs = dict(model_seconds=0.0, executor_seconds=0.0, model_decisions=0, tool_calls_attempted=0,
-                 executions_succeeded=0, executions_failed=0, executions_without_receipt=0)
+                 executions_succeeded=0, executions_failed=0, executions_without_receipt=0,
+                 validation_failures=0, validation_retries=0)
     def finish(result: dict) -> dict:
-        return {**result, "costs": dict(costs), "execution_receipts": list(receipts), "task_success_judged": False}
-    for index in range(max_calls + 1):
+        return {**result, "costs": dict(costs), "execution_receipts": list(receipts),
+                "decisions": list(decisions), "task_success_judged": False}
+    for _ in range(max_calls + 1 + max_validation_retries):
         start = agent._clock(True) if hasattr(agent, "_clock") else time.perf_counter()
         costs["model_decisions"] += 1
         error = None
@@ -387,12 +419,31 @@ def run_serial_agent(agent: ToolBenchAgent, query: str, tools: dict[str, ToolSpe
             end = agent._clock(True) if hasattr(agent, "_clock") else time.perf_counter()
             costs["model_seconds"] += end - start
         if error is not None:
+            decisions.append({"status": "error", "error": error, "generation_failure": details})
+            invalid = (details is not None and details.get("reason") == "invalid_arguments"
+                       and details.get("api_identity") in tools)
+            if invalid:
+                costs["validation_failures"] += 1
+            if invalid and costs["validation_retries"] < max_validation_retries:
+                costs["validation_retries"] += 1
+                # Validation is a local failed decision, never a tool call or
+                # an observation. The model must produce the next identity and
+                # arguments itself; no values or Finish action are substituted.
+                history.append({"type": "validation_error", "retry": costs["validation_retries"],
+                                "api_identity": details["api_identity"], "thought": details.get("thought"),
+                                "generated_arguments": details["generated_text"], "error": error})
+                continue
             return finish({"status": "generation_error", "error": error,
                            "generation_failure": details, "history": history})
+        decisions.append({"status": "valid", "api_identity": decision.api_identity,
+                          "ranked_identities_top5": list(decision.ranked_identities[:5]),
+                          "finish_rank": decision.ranked_identities.index(FINISH) + 1
+                          if FINISH in decision.ranked_identities else None,
+                          "generation_budgets": decision.generation_budgets})
         if decision.api_identity == FINISH:
             history.extend(call_history(decision.thought, FINISH, decision.arguments))
             return finish({"status": decision.arguments["return_type"], "result": decision.arguments, "history": history})
-        if index == max_calls:
+        if costs["tool_calls_attempted"] == max_calls:
             return finish({"status": "call_budget_exhausted", "history": history})
         history.extend(call_history(decision.thought, decision.api_identity, decision.arguments))
         start = time.perf_counter()

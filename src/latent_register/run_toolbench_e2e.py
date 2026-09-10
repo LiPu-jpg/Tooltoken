@@ -40,7 +40,10 @@ class DecisionPolicy:
 
 
 def run_panel(agent, tools, queries, factory, config, bindings, output: Path, *, max_calls=8,
-              thought_tokens=1024, argument_tokens=1024, export_tooleval=False):
+              thought_tokens=1024, argument_tokens=1024, export_tooleval=False,
+              max_validation_retries=0):
+    if type(max_validation_retries) is not int or max_validation_retries < 0:
+        raise ValueError("max_validation_retries must be a nonnegative integer")
     output.mkdir(parents=True, exist_ok=False)
     if export_tooleval:
         names = evaluator_names(tools, bindings)
@@ -54,7 +57,8 @@ def run_panel(agent, tools, queries, factory, config, bindings, output: Path, *,
             # or answer is provided to either policy or factory.
             execute = factory(query_id=query["id"], config=config, tool_bindings=bindings)
             if not callable(execute): raise TypeError("Executor factory must return (exact_identity, arguments) -> result")
-            trace = run_serial_agent(policy, query["query"], tools, execute, max_calls=max_calls)
+            trace = run_serial_agent(policy, query["query"], tools, execute, max_calls=max_calls,
+                                     max_validation_retries=max_validation_retries)
             handle.write(compact({"id": query["id"], "trace": trace}) + "\n"); handle.flush()
             if export_tooleval:
                 converted[query["id"]] = convert_trace(query["query"], trace, tools, bindings)
@@ -62,11 +66,12 @@ def run_panel(agent, tools, queries, factory, config, bindings, output: Path, *,
             (output / "progress.json").write_text(compact({"completed_episodes": sum(counts.values()),
                                                           "total_episodes": len(queries)}) + "\n")
     report = dict(episodes=len(queries), statuses=dict(counts), registration=agent.registration_profiles,
-                  budgets=dict(max_calls=max_calls, thought_tokens=thought_tokens, argument_tokens=argument_tokens),
+                  budgets=dict(max_calls=max_calls, thought_tokens=thought_tokens, argument_tokens=argument_tokens,
+                               max_validation_retries=max_validation_retries),
                   task_success_judged=False, official_sopr=False, oracle_tool_or_observation=False,
                   backend_kind=config.get("backend_kind", "explicit_external_factory"),
                   backend_revision=config.get("backend_revision"),
-                  adaptation_gate_passed=False)
+                  adaptation_gate_passed=None, adaptation_gate_status="not_assessed_by_episode_runner")
     if export_tooleval:
         (output / "tooleval_answers.json").write_text(json.dumps(converted, ensure_ascii=False, indent=2) + "\n")
     (output / "REPORT.json").write_text(json.dumps(report, indent=2) + "\n")
@@ -83,7 +88,11 @@ def main():
     p.add_argument("--max-calls", type=int, default=8)
     p.add_argument("--max-thought-tokens", type=int, default=1024)
     p.add_argument("--max-argument-tokens", type=int, default=1024)
+    p.add_argument("--max-validation-retries", type=int, default=0,
+                   help="Total bounded local validation feedback retries per episode; disabled by default")
     args=p.parse_args()
+    if args.max_validation_retries < 0:
+        p.error("--max-validation-retries must be nonnegative")
     if args.output_dir.exists(): raise FileExistsError(args.output_dir)
     queries=load_queries(args.queries,args.split)
     tools=load_tools(args.tools,split=args.split)
@@ -100,7 +109,8 @@ def main():
         raise TypeError("Executor factory must return a callable")
     agent=load_agent(args.checkpoint,device=args.device)
     report=run_panel(agent,tools,queries,factory,config,bindings,args.output_dir,max_calls=args.max_calls,
-        thought_tokens=args.max_thought_tokens,argument_tokens=args.max_argument_tokens,export_tooleval=True)
+        thought_tokens=args.max_thought_tokens,argument_tokens=args.max_argument_tokens,export_tooleval=True,
+        max_validation_retries=args.max_validation_retries)
     provenance=dict(checkpoint_manifest_sha256=sha256(args.checkpoint/"SHA256.json"),
         tools_sha256=sha256(args.tools),queries_sha256=sha256(args.queries),
         executor_factory=args.executor_factory,executor_source_sha256=sha256(Path(module.__file__)),

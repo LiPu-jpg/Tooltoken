@@ -43,6 +43,16 @@ def convert_trace(query, trace, tools, bindings, *, method="NativeMemory.Serial"
     index, final_answer, finished = 1, "", False
     while index < len(history):
         call = history[index]
+        if not finished and call.get("type") == "validation_error":
+            if (call.get("api_identity") not in names or type(call.get("retry")) is not int
+                    or call["retry"] < 1 or not isinstance(call.get("error"), str)
+                    or not isinstance(call.get("generated_arguments"), str)):
+                raise ValueError("Invalid or unbound validation feedback")
+            # Preserve runtime feedback in the exported graph without inventing
+            # an executed tool, its return, or a model-generated final answer.
+            nodes.append({"role": "user", "message": "Runtime validation feedback: " + compact(call), "next": []})
+            index += 1
+            continue
         if finished or call.get("type") != "call" or call.get("api_identity") not in names:
             raise ValueError("Nonserial or unbound call in trace")
         identity = call["api_identity"]
