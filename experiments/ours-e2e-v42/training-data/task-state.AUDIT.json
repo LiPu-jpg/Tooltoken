@@ -1,0 +1,16 @@
+{
+  "source_ready_sha256": "5bc63218932fd3d15e38611e1a5fe44d63a0386fd5ab9d94cb7e3abc5c734c07",
+  "source_sha256": "f331bb3c831ae6307d1fef5364d850beb0d24ded39743bb8a7b673230d781afc",
+  "counts": {
+    "original_interface_replay": 735,
+    "state_supervision": 865,
+    "final_without_all_requirements_supported": 227
+  },
+  "records": 1600,
+  "teacher_review_is_not_truth": true,
+  "teacher_revision": "v2",
+  "split": "train",
+  "selection_seed": 42017,
+  "new_optimizer": true,
+  "purpose": "200-update causal state pilot, not full-dataset retraining"
+}

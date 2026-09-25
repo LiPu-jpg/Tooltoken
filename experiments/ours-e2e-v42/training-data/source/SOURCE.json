@@ -1,0 +1,10 @@
+{
+  "train_task_state.py": {
+    "source": "v42 release-v1/scripts/train_task_state.py",
+    "sha256": "29324c8c145fce09b62bdbca3073276d07227c87ca926713a5e5b1b9c7ede048"
+  },
+  "build_state_pilot.py": {
+    "source": "v42 release-v1/scripts/build_state_pilot.py",
+    "sha256": "9db49fe286337f5ffa4ab7410b66f458f4a491da3fa820bfeba6f6bd7479a1a6"
+  }
+}

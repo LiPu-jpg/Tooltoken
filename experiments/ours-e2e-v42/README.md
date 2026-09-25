@@ -2,7 +2,9 @@
 
 本目录将本地 v42 task-state release、memory／全文 reader 对照和
 completion-v6 来源约束补答代码整理为可独立使用的源码快照。
-模型权重、训练/评测数据、逐题结果、凭据和集群作业脚本由运行环境单独提供。
+模型权重、评测数据、逐题结果、凭据和集群作业脚本由运行环境单独提供。
+实际 best5400 训练样本的有序重建清单、API 名单、工具文档、负例与哈希见
+[training-data/README.md](training-data/README.md)。原始轨迹保留在单独的数据包中。
 本次发布验证 CPU 回归与 CLI 接线，没有重新运行真实 8B、GPU 或 SoPR 评测。
 
 ## 入口与版本
@@ -15,6 +17,8 @@ completion-v6 来源约束补答代码整理为可独立使用的源码快照。
 | `--protocol completion-v6 --reader-mode …` | 完整 query 回退、来源片段补答、共享调用/生成预算 | `repairs/completion-v6-source-patch-20260923` |
 
 后两类入口必须显式选择 reader。全文 reader 是推理输入消融，不是训练匹配的全文基线。
+最近完成的 765 题运行采用 best5400 checkpoint 与 `documents_fp32`；下方 native
+命令是通用用法示例。严格复现该运行还需其原始 `run_best.py` 预算适配及执行器合同。
 completion-v6 是独立推理协议变化，不能将其效果归因为 memory 或训练的单变量贡献。
 v6 claim-guard 的后续探针尚未完成原生重规划/工具执行接线，因此未纳入上述运行入口。
 

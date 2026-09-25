@@ -6,6 +6,9 @@ contains the task-state agent, FP32 memory/document reader variants, and the
 opt-in completion-v6 controller. It includes source hashes and an offline CPU
 check command. This versioned snapshot has its own import path; the root
 package below remains the historical implementation.
+The [best5400 training-data contract](experiments/ours-e2e-v42/training-data/README.md)
+adds actual ordered sample membership, API inventories, source hashes, tool
+documents, negatives, and a reconstruction command for aligning training data.
 
 **ToolBench memory v2:** see [the structured compiler, schema supervision,
 8/16-slot recipes and development diagnostics](docs/TOOLBENCH_MEMORY_V2.md).

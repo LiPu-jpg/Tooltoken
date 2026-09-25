@@ -1,0 +1,81 @@
+{
+  "format_version": 1,
+  "checkpoint_manifest_sha256": "8ea5d5741e8cfb47aa4ffb66d4fcdd1ab4d34c6b084a4ea08d24a8073abb066d",
+  "files": {
+    "README.md": {
+      "bytes": 5766,
+      "sha256": "16041c5119f7f54245374d9199dd6618074ae5caf5e56c56a9b3801076bc48aa"
+    },
+    "SOURCE_INPUTS.json": {
+      "bytes": 1293,
+      "sha256": "ec1ab18863334476af4447f97d95116b0b3711ad18f549d896e843daf7fcec0f"
+    },
+    "SUMMARY.json": {
+      "bytes": 854,
+      "sha256": "4ade1d3c0c31ca24e479d1b44518e153a4484a9d65f59881f8bb7b6eac4c3174"
+    },
+    "ancestor-declared-train-api-ids.json": {
+      "bytes": 366303,
+      "sha256": "1b749c3927d6e2cb1115e167a7392063b51014a60f41f5271d784aa7dbe366a3"
+    },
+    "hard-negatives.json.gz": {
+      "bytes": 23732827,
+      "sha256": "b453f11d561390ced508a3f41162180ee5e358ae9fb5e1f398400c18df629128",
+      "uncompressed_sha256": "97e9f461833981acf12d962b989223690a48facbfaa5be5b7498d936481c1ef4"
+    },
+    "lineage.json": {
+      "bytes": 26954,
+      "sha256": "5a9638ff7f25a6b46f1b0553a633de7c73b35cb1deee86dca4ab91e8b714780e"
+    },
+    "positive-seen-api-ids.json": {
+      "bytes": 265330,
+      "sha256": "5cca070372026b2100525a0ed2e580a83dbcfa8ab23efce4a94828f815667b10"
+    },
+    "prepared-base.READY.json": {
+      "bytes": 365,
+      "sha256": "5bc63218932fd3d15e38611e1a5fe44d63a0386fd5ab9d94cb7e3abc5c734c07"
+    },
+    "rebuild.py": {
+      "bytes": 8768,
+      "sha256": "0606684cf40ce0021125d928ca50861e00f4fd3cd6ed93a09df23cfcb7ac4cf7"
+    },
+    "sample-order.jsonl.gz": {
+      "bytes": 5394709,
+      "sha256": "26d9335057d7b795eb5d510e26519c7930f276a3ce45d5fdb78edd148424842b",
+      "uncompressed_sha256": "a35b8cd9a07b5d863fdcdb337af849c2b9290d11ece6dadb62af011ca7b30790"
+    },
+    "selected-document-api-ids.json": {
+      "bytes": 712401,
+      "sha256": "43f7d0cb7f268286950d8e31b27af7ee01e4272565b2bbb4d50a91872e9f2c2d"
+    },
+    "source/SOURCE.json": {
+      "bytes": 351,
+      "sha256": "9aa8b24eaddf16966725dab38e8abbd87ff1801e5c31d447ee729c6cc5d04e68"
+    },
+    "source/build_state_pilot.py": {
+      "bytes": 3073,
+      "sha256": "9db49fe286337f5ffa4ab7410b66f458f4a491da3fa820bfeba6f6bd7479a1a6"
+    },
+    "source/train_task_state.py": {
+      "bytes": 10322,
+      "sha256": "29324c8c145fce09b62bdbca3073276d07227c87ca926713a5e5b1b9c7ede048"
+    },
+    "task-state.AUDIT.json": {
+      "bytes": 554,
+      "sha256": "fd721c7f732442c8eb5fa46198dd3fe2a5f87151dba3d9311431b42a93373e80"
+    },
+    "task-state.READY.json": {
+      "bytes": 262,
+      "sha256": "67dd0f1208927b2265d6ed2dacad2a16aaa244ab84e8dab3131dce7e64120255"
+    },
+    "train-tools.jsonl.gz": {
+      "bytes": 17570625,
+      "sha256": "97b50201546ede41476da342e7dd745c136bafb630ac0dc00b9e7cd808e5737f",
+      "uncompressed_sha256": "1bcc9eb0e4b3aa484f738509232fe952616cd45f196d17bbbd9a5986c6e56b50"
+    },
+    "training-registry-api-ids.json": {
+      "bytes": 1787769,
+      "sha256": "33949b3b5b1ae32186cd48bde5a7332d505573c69b0a4d75e8ee07428141b892"
+    }
+  }
+}

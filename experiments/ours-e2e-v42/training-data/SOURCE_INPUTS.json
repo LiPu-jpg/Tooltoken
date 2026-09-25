@@ -1,0 +1,26 @@
+{
+  "base": {
+    "path_at_training": "/mnt/home/user46/native-e2e-v38-prep/prepared-v6-plan/records.jsonl",
+    "host_role": "HPC training cluster",
+    "sha256": "340cedb8969462a6c4142c0d5c9578dce014d2c5685995ec2318873b98a5c445",
+    "records": 173746,
+    "selected_records": 41600
+  },
+  "task_state": {
+    "path_at_training": "/online1/ycsc_chenkh/hitici_11/experiments/native-e2e-v42-task-state-a100-v1/prepared-v1/records.jsonl",
+    "path_status": "Verified against original train_inside_allocation.sh and read-only A100 SHA256 on 2026-09-25",
+    "sha256": "a747b872ecb3f611934b4e3edd60edd19d4af6b95ed85d02d10a96c416d6e037",
+    "records": 1600
+  },
+  "base_selection_archive": {
+    "name": "records-base.jsonl.gz",
+    "uncompressed_sha256": "f164cf31f61627309a10c84c52f1ee63169fa2d3b6598c8b5699714b1f50ce94",
+    "records": 41600,
+    "format": "record_index/source_line_sha256/record wrapper",
+    "purpose": "alternative to transferring the full 173746-record base inventory"
+  },
+  "publication": {
+    "raw_trajectory_text_in_git": false,
+    "reason": "Opaque API-key literals occur in source trajectories; originals retained locally without alteration. Public package provides exact ordered membership, record fingerprints, source file hashes and reconstruction CLI."
+  }
+}

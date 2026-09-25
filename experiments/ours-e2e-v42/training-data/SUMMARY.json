@@ -1,0 +1,28 @@
+{
+  "optimizer_updates": 5400,
+  "record_presentations": 43200,
+  "unique_prepared_decision_ids": 42832,
+  "unique_query_ids": 31289,
+  "ordinary_tool_identities": 7171,
+  "mode_counts": {
+    "final": 11193,
+    "tool": 26360,
+    "give_up": 5647
+  },
+  "active_mask_counts": {
+    "answer": 10965,
+    "control": 42972,
+    "selection": 26360,
+    "arguments": 17752
+  },
+  "intent_supervision_records": 25899,
+  "v42_task_state_supervision_records": 865,
+  "v42_records_already_in_5200_ancestry": 368,
+  "v42_records_not_in_5200_ancestry": 1232,
+  "training_registry_ordinary_apis": 48318,
+  "selected_document_apis_any_mode": 19254,
+  "ancestor_declared_training_apis": 9900,
+  "membership_basis": "committed checkpoint ancestry, not planned shuffle prefix",
+  "complete_token_exposure_audited": false,
+  "PORTS_training_alignment_verified": false
+}
