@@ -20,7 +20,10 @@
     "purpose": "alternative to transferring the full 173746-record base inventory"
   },
   "publication": {
-    "raw_trajectory_text_in_git": false,
-    "reason": "Opaque API-key literals occur in source trajectories; originals retained locally without alteration. Public package provides exact ordered membership, record fingerprints, source file hashes and reconstruction CLI."
+    "actual_training_examples_in_git": true,
+    "file": "records.jsonl.gz",
+    "original_bytes_preserved": false,
+    "transformation_manifest": "PUBLISHED_DATA.json",
+    "reason": "Actual ordered examples are published with one opaque API-key literal replaced in two presentations; all other bytes are preserved. Unmodified originals remain local."
   }
 }

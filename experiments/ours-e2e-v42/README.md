@@ -3,8 +3,8 @@
 本目录将本地 v42 task-state release、memory／全文 reader 对照和
 completion-v6 来源约束补答代码整理为可独立使用的源码快照。
 模型权重、评测数据、逐题结果、凭据和集群作业脚本由运行环境单独提供。
-实际 best5400 训练样本的有序重建清单、API 名单、工具文档、负例与哈希见
-[training-data/README.md](training-data/README.md)。原始轨迹保留在单独的数据包中。
+实际 best5400 训练样本、API 名单、工具文档、负例与哈希见
+[training-data/README.md](training-data/README.md)。训练样本可直接下载；两条样本中的 API-key 字面量已替换并记录。
 本次发布验证 CPU 回归与 CLI 接线，没有重新运行真实 8B、GPU 或 SoPR 评测。
 
 ## 入口与版本

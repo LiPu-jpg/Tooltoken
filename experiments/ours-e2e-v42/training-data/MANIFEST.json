@@ -2,13 +2,17 @@
   "format_version": 1,
   "checkpoint_manifest_sha256": "8ea5d5741e8cfb47aa4ffb66d4fcdd1ab4d34c6b084a4ea08d24a8073abb066d",
   "files": {
+    "PUBLISHED_DATA.json": {
+      "bytes": 1473,
+      "sha256": "0e677d25020c6d58e96d010b42e48128f06a6bcce40dad3568f806a8e206aaf6"
+    },
     "README.md": {
-      "bytes": 5766,
-      "sha256": "16041c5119f7f54245374d9199dd6618074ae5caf5e56c56a9b3801076bc48aa"
+      "bytes": 6743,
+      "sha256": "d50270703b16220dc5aa87c4984b826d58beba4825d43b718fefd98e2725455d"
     },
     "SOURCE_INPUTS.json": {
-      "bytes": 1293,
-      "sha256": "ec1ab18863334476af4447f97d95116b0b3711ad18f549d896e843daf7fcec0f"
+      "bytes": 1374,
+      "sha256": "655893063f517d01e11809385c330dfd70c69e02f55e5213448cb2a2ace83fc2"
     },
     "SUMMARY.json": {
       "bytes": 854,
@@ -38,6 +42,11 @@
     "rebuild.py": {
       "bytes": 8768,
       "sha256": "0606684cf40ce0021125d928ca50861e00f4fd3cd6ed93a09df23cfcb7ac4cf7"
+    },
+    "records.jsonl.gz": {
+      "bytes": 35996734,
+      "sha256": "f3533a05ccc6a5fa17009bf910bf37163c8e3678a6e291228c036f95347e0f19",
+      "uncompressed_sha256": "7430d6bd1710126ba6cf4a53dced2698f63d3d04d39952044ed748adfa386564"
     },
     "sample-order.jsonl.gz": {
       "bytes": 5394709,
@@ -76,6 +85,10 @@
     "training-registry-api-ids.json": {
       "bytes": 1787769,
       "sha256": "33949b3b5b1ae32186cd48bde5a7332d505573c69b0a4d75e8ee07428141b892"
+    },
+    "verify_download.py": {
+      "bytes": 2108,
+      "sha256": "d8a0388c8793ba9c485e79f019aebace1a169897401e49950d431a73c62af232"
     }
   }
 }

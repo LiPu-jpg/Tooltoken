@@ -6,10 +6,26 @@
 评测 reader 为 `documents_fp32`。这不是旧 5000 更新 checkpoint，也不是 completion-v6。
 
 本次从训练集群读取了实际样本、工具文档和 hard negatives，并与训练时的文件哈希核验。
-Git 中提供完整样本重建合同；未经修改的原始轨迹另行保留，因为少量训练轨迹包含
-来源未确认的 API-key 字面量。**本目录不公开原始 query/history/argument/answer 文本。**
-拿到下面指定哈希的两份原始输入，或已取回的样本归档，即可逐条重建实际训练样本。
-工具文档、参数 schema、原始 API identity/source binding 和 hard negatives 已随包提供。
+**实际训练样本已上传：[records.jsonl.gz](records.jsonl.gz)**，包含 query、完整因果历史、
+参数/回答目标、repair、intent 和 task-state 监督（适用时）。无需另取集群原始文件即可使用。
+工具文档、参数 schema、原始 API identity/source binding 和 hard negatives 也已随包提供。
+
+公开样本只做了一项替换：2 次样本呈现中同一个来源未确认的 API-key 字面量共出现 12 次，
+统一替换为 `REDACTED_SOURCE_API_KEY`；其余字节、样本顺序及重复次数保持不变。
+`PUBLISHED_DATA.json` 记录原始/公开数据哈希、受影响行号与逐条哈希。未经替换的原始副本仍保留本地。
+
+## 直接下载使用
+
+```sh
+curl -fL https://raw.githubusercontent.com/LiPu-jpg/Tooltoken/native/ours-e2e-source-20260925/experiments/ours-e2e-v42/training-data/records.jsonl.gz -o ours-best5400-records.jsonl.gz
+gzip -dc ours-best5400-records.jsonl.gz > ours-best5400-records.jsonl
+```
+
+共 43,200 行，每行是一次实际训练样本呈现。前 40,000 行为真实 5000 更新前缀，
+前 41,600 行为 5200 更新前缀。不要按 decision ID 去重。
+在 clone 的仓库中运行 `python3 experiments/ours-e2e-v42/training-data/verify_download.py`
+可校验公开归档、逐行内容及其与原始训练顺序的对应关系。
+下面的重建命令用于持有原始输入时恢复未经替换的版本。
 
 ## 绑定到哪个训练集合
 

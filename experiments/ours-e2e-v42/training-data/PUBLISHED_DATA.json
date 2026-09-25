@@ -1,0 +1,29 @@
+{
+  "file": "records.jsonl.gz",
+  "through_update": 5400,
+  "record_presentations": 43200,
+  "order": "Same presentation order as sample-order.jsonl.gz; first 40000 records are the 5000-update prefix; first 41600 are the 5200-update prefix.",
+  "original_content_sha256": "4d5884f4d956cd7868ba136f498c745b662e2f0cb89772a80735d751768a4d46",
+  "published_content_sha256": "7430d6bd1710126ba6cf4a53dced2698f63d3d04d39952044ed748adfa386564",
+  "published_archive_sha256": "f3533a05ccc6a5fa17009bf910bf37163c8e3678a6e291228c036f95347e0f19",
+  "published_archive_bytes": 35996734,
+  "original_bytes_preserved": false,
+  "transformation": "Replace one opaque API-key literal everywhere it occurs with REDACTED_SOURCE_API_KEY. All other bytes, record order and supervision are preserved.",
+  "replacement": "REDACTED_SOURCE_API_KEY",
+  "distinct_literals_replaced": 1,
+  "affected_presentations": [
+    {
+      "presentation": 2830,
+      "occurrences": 5,
+      "original_record_sha256": "8c5e653888ed21c39dda388270a26ccb8fb3b4d6b6bae21dd2b4e3c30b2941e9",
+      "published_record_sha256": "03def03ae1e34998198e981b1740e62f196284b0729f2cfdec108fcc735919d5"
+    },
+    {
+      "presentation": 36327,
+      "occurrences": 7,
+      "original_record_sha256": "6b15603c5e815fe2dee15d564fc48c6eb5514128f532188465049ef5c6f1634d",
+      "published_record_sha256": "fb325c2cff06bd22f7a68f28578e5e9fc0cc5ba117bd95c5af9d4c623659d9e2"
+    }
+  ],
+  "PORTS_training_alignment_verified": false
+}
