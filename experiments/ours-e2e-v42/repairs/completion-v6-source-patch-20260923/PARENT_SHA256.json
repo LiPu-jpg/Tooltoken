@@ -1,0 +1,10 @@
+{
+  "analysis-v1/memory-b50-paired-error-audit-v1/deployment/variant/task_completion/completion.py": "d0643407254b59b1a0742ed6290a9abfc99f715af9e9449b6391c2ac24d76877",
+  "analysis-v1/memory-b50-paired-error-audit-v1/deployment/variant/task_completion/runner.py": "41f7cc1b110caf8e4cc870c2d043bd1e54cd43ccf0287759c73fc03cad0f8389",
+  "analysis-v1/memory-b50-paired-error-audit-v1/deployment/variant/task_completion/native_adapter.py": "b28f88b79f0deb416a261216de3c02170e0cc9a9ed4786ab2c7bf6e8b6b51fd2",
+  "analysis-v1/memory-b50-paired-error-audit-v1/deployment/variant/task_completion/prompts.py": "37da92b707821a2162e0acf9d6e4505847d40706fda252e81d14bbc4640ba5bc",
+  "analysis-v1/memory-b50-paired-error-audit-v1/deployment/scripts/run_native_variant.py": "74f43775ce9b3b952df77cb9855194e4ef3cfc4b35115361488ecca281cf50a1",
+  "repairs/completion-e2e-50-v5-coverage-routing-20260923/variant/declared_name_executor.py": "194872eab42501b03a6bab3943c22acafa645006933d085e6652414bf01c99b5",
+  "repairs/completion-e2e-50-v5-coverage-routing-20260923/variant/reader_variant.py": "1329939d22e4b7d098ef355a4c4a2bb262f706d52fa5a82f58948f882290d579",
+  "repairs/completion-e2e-50-v5-coverage-routing-20260923/variant/name_contract.py": "2c25776118dff18c25ddbc4ebbdfbca7eeb52e47f88e4772ca7ad72e05c5cfa0"
+}

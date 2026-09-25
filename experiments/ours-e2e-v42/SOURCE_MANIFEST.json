@@ -1,0 +1,255 @@
+{
+  "kind": "source-only export; not the original deployment manifest",
+  "files": {
+    "release-v1/tests/test_topk.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/tests/test_topk.py",
+      "sha256": "34a0e47740cdff5286f1da452087bfeeb9dba7d4479a030bda5b24ecd0b89030"
+    },
+    "release-v1/tests/test_hybrid.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/tests/test_hybrid.py",
+      "sha256": "10ae69b182b0d98b36e415b321d3e0283d4217dc01401a430d3829afe719402c"
+    },
+    "release-v1/tests/test_task_state.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/tests/test_task_state.py",
+      "sha256": "e58f01ebe14071c1af92de41eaafcc6c008295d3aebe9e81c783b21c3541da65"
+    },
+    "release-v1/tests/test_toolbench_e2e.py": {
+      "source": "worktrees/active/tooltoken-native-e2e-recovery-v14-20260910/tests/test_toolbench_e2e.py",
+      "sha256": "4e5e299551bba6c00acaecb3a821148aaebef0d4037e75053bc1b4d8662a33dc",
+      "export_sha256": "422f85e1a8b943d9228b25274c4ee9387e1338354fd2203f1d85d70b553fa451",
+      "adaptation": "Pass the legacy test budgets explicitly; v42 defaults are 32/256. Runtime source unchanged."
+    },
+    "release-v1/tests/test_toolbench_http_eval.py": {
+      "source": "worktrees/active/tooltoken-native-e2e-recovery-v14-20260910/tests/test_toolbench_http_eval.py",
+      "sha256": "561e23df04ac5d83cc6edbbaad388e7b7181f4ed02555a47689f5888d7144360"
+    },
+    "release-v1/tests/test_toolbench_recovery.py": {
+      "source": "worktrees/active/tooltoken-native-e2e-recovery-v14-20260910/tests/test_toolbench_recovery.py",
+      "sha256": "35d9c941c320a45f4d50674ab4b71acc347b467389f1a697cc7ccc61305bd5fd"
+    },
+    "eval-reader-ab-v1/variant/declared_name_executor.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/eval-reader-ab-v1/variant/declared_name_executor.py",
+      "sha256": "194872eab42501b03a6bab3943c22acafa645006933d085e6652414bf01c99b5"
+    },
+    "eval-reader-ab-v1/variant/reader_variant.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/eval-reader-ab-v1/variant/reader_variant.py",
+      "sha256": "1329939d22e4b7d098ef355a4c4a2bb262f706d52fa5a82f58948f882290d579"
+    },
+    "eval-reader-ab-v1/variant/name_contract.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/eval-reader-ab-v1/variant/name_contract.py",
+      "sha256": "2c25776118dff18c25ddbc4ebbdfbca7eeb52e47f88e4772ca7ad72e05c5cfa0"
+    },
+    "eval-reader-ab-v1/scripts/test_reader.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/eval-reader-ab-v1/scripts/test_reader.py",
+      "sha256": "552c9799b4287bd856497008f77a89f4c40db2aa58ddb1b6585591971ba2cc3b"
+    },
+    "repairs/completion-v6-source-patch-20260923/tests/test_runtime_integration.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/repairs/completion-v6-source-patch-20260923/tests/test_runtime_integration.py",
+      "sha256": "f1c748ab446127e7be3c3f9485ad35be6608b41cc605a552b46b86dea359673f"
+    },
+    "repairs/completion-v6-source-patch-20260923/tests/test_regressions.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/repairs/completion-v6-source-patch-20260923/tests/test_regressions.py",
+      "sha256": "656ff39170ede3903f4f30b7b70b10dc150cd332f4c40f346669cba79ae91b9f"
+    },
+    "repairs/completion-v6-source-patch-20260923/scripts/run_native_variant.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/repairs/completion-v6-source-patch-20260923/scripts/run_native_variant.py",
+      "sha256": "4967a43b5773e76f18b9eff72bbb994e5e407e6a40fe9d48f7e78e291511a04c"
+    },
+    "repairs/completion-v6-source-patch-20260923/variant/declared_name_executor.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/repairs/completion-v6-source-patch-20260923/variant/declared_name_executor.py",
+      "sha256": "194872eab42501b03a6bab3943c22acafa645006933d085e6652414bf01c99b5"
+    },
+    "repairs/completion-v6-source-patch-20260923/variant/reader_variant.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/repairs/completion-v6-source-patch-20260923/variant/reader_variant.py",
+      "sha256": "1329939d22e4b7d098ef355a4c4a2bb262f706d52fa5a82f58948f882290d579"
+    },
+    "repairs/completion-v6-source-patch-20260923/variant/name_contract.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/repairs/completion-v6-source-patch-20260923/variant/name_contract.py",
+      "sha256": "2c25776118dff18c25ddbc4ebbdfbca7eeb52e47f88e4772ca7ad72e05c5cfa0"
+    },
+    "repairs/completion-v6-source-patch-20260923/variant/task_completion/runner.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/repairs/completion-v6-source-patch-20260923/variant/task_completion/runner.py",
+      "sha256": "f74c6762264a73519d57cfc9d08aed1681c17e999de70658c6fd477cf6797798"
+    },
+    "repairs/completion-v6-source-patch-20260923/variant/task_completion/native_adapter.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/repairs/completion-v6-source-patch-20260923/variant/task_completion/native_adapter.py",
+      "sha256": "d5caedb51f4ace36b542759ff9aa1b314fc82fcbd38f0bc3c4c69b34a081dce1"
+    },
+    "repairs/completion-v6-source-patch-20260923/variant/task_completion/evidence_patch.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/repairs/completion-v6-source-patch-20260923/variant/task_completion/evidence_patch.py",
+      "sha256": "5dada78a8550b96b116d228c7a017df776a37b6890947b9f44e4b33781858930"
+    },
+    "repairs/completion-v6-source-patch-20260923/variant/task_completion/completion.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/repairs/completion-v6-source-patch-20260923/variant/task_completion/completion.py",
+      "sha256": "7a03c5111afd6371e120470404874f686a692ad73268d1cac35dd7e5197c8e62"
+    },
+    "repairs/completion-v6-source-patch-20260923/variant/task_completion/prompts.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/repairs/completion-v6-source-patch-20260923/variant/task_completion/prompts.py",
+      "sha256": "d2ee26c1e43ab01a6093c8ea372b3ccbb500f6d10439aa1297070734deacb605"
+    },
+    "repairs/completion-v6-source-patch-20260923/PARENT_SHA256.json": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/repairs/completion-v6-source-patch-20260923/PARENT_SHA256.json",
+      "sha256": "1679e05f2ea135a6d911aecb5a47ff0dbe6c75b1c12f4417b8e18fc1484b0533"
+    },
+    "analysis-v1/memory-b50-paired-error-audit-v1/deployment/variant/task_completion/completion.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/analysis-v1/memory-b50-paired-error-audit-v1/deployment/variant/task_completion/completion.py",
+      "sha256": "d0643407254b59b1a0742ed6290a9abfc99f715af9e9449b6391c2ac24d76877"
+    },
+    "analysis-v1/memory-b50-paired-error-audit-v1/deployment/variant/task_completion/runner.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/analysis-v1/memory-b50-paired-error-audit-v1/deployment/variant/task_completion/runner.py",
+      "sha256": "41f7cc1b110caf8e4cc870c2d043bd1e54cd43ccf0287759c73fc03cad0f8389"
+    },
+    "analysis-v1/memory-b50-paired-error-audit-v1/deployment/variant/task_completion/native_adapter.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/analysis-v1/memory-b50-paired-error-audit-v1/deployment/variant/task_completion/native_adapter.py",
+      "sha256": "b28f88b79f0deb416a261216de3c02170e0cc9a9ed4786ab2c7bf6e8b6b51fd2"
+    },
+    "analysis-v1/memory-b50-paired-error-audit-v1/deployment/variant/task_completion/prompts.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/analysis-v1/memory-b50-paired-error-audit-v1/deployment/variant/task_completion/prompts.py",
+      "sha256": "37da92b707821a2162e0acf9d6e4505847d40706fda252e81d14bbc4640ba5bc"
+    },
+    "analysis-v1/memory-b50-paired-error-audit-v1/deployment/scripts/run_native_variant.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/analysis-v1/memory-b50-paired-error-audit-v1/deployment/scripts/run_native_variant.py",
+      "sha256": "74f43775ce9b3b952df77cb9855194e4ef3cfc4b35115361488ecca281cf50a1"
+    },
+    "repairs/completion-e2e-50-v5-coverage-routing-20260923/variant/declared_name_executor.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/repairs/completion-e2e-50-v5-coverage-routing-20260923/variant/declared_name_executor.py",
+      "sha256": "194872eab42501b03a6bab3943c22acafa645006933d085e6652414bf01c99b5"
+    },
+    "repairs/completion-e2e-50-v5-coverage-routing-20260923/variant/reader_variant.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/repairs/completion-e2e-50-v5-coverage-routing-20260923/variant/reader_variant.py",
+      "sha256": "1329939d22e4b7d098ef355a4c4a2bb262f706d52fa5a82f58948f882290d579"
+    },
+    "repairs/completion-e2e-50-v5-coverage-routing-20260923/variant/name_contract.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/repairs/completion-e2e-50-v5-coverage-routing-20260923/variant/name_contract.py",
+      "sha256": "2c25776118dff18c25ddbc4ebbdfbca7eeb52e47f88e4772ca7ad72e05c5cfa0"
+    },
+    "release-v1/source/src/latent_register/toolbench_task_state.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/toolbench_task_state.py",
+      "sha256": "52b640f9ebc1aadb66a9ebe83b759d057ba3215ea52d2a426b90ff2d0dbf8177"
+    },
+    "release-v1/source/src/latent_register/toolbench_data.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/toolbench_data.py",
+      "sha256": "00a4e1e2630af7aaef135a72fe6c6545fdff5451c28c834b29295faa447f6a4c"
+    },
+    "release-v1/source/src/latent_register/toolbench_curriculum_data.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/toolbench_curriculum_data.py",
+      "sha256": "3aa372ccdb29bc00f2965b03002c0c07af794abb2939258b73582ed7266f565c"
+    },
+    "release-v1/source/src/latent_register/toolbench_checkpoint.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/toolbench_checkpoint.py",
+      "sha256": "a092ca700e277019d6f3e7f6331921b457a2b3ced7c73b3b14348030d98f37c5"
+    },
+    "release-v1/source/src/latent_register/toolbench_hybrid.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/toolbench_hybrid.py",
+      "sha256": "61eb0ad9798fcbb095ff376e295db0c80957ef6a7865b5078b642cfb7edcf74e"
+    },
+    "release-v1/source/src/latent_register/toolbench_agent.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/toolbench_agent.py",
+      "sha256": "34efb18facb3b5e3586019513b14c8ad9145a4d84497353ba5df2b674c28118e"
+    },
+    "release-v1/source/src/latent_register/toolbench_self_conditioning.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/toolbench_self_conditioning.py",
+      "sha256": "30e13cbb883b4f75f5567494721acee9f0ae0ea0faa71cbcba76ecbdbf34b005"
+    },
+    "release-v1/source/src/latent_register/training_memory.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/training_memory.py",
+      "sha256": "8ca5632cbf1d83521fb633c6271d8620334ee8d1de641cd52f82c728ad036e04"
+    },
+    "release-v1/source/src/latent_register/toolbench_scales.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/toolbench_scales.py",
+      "sha256": "17ebee3cc65363d8188dc8c9089a98b8e71f25508c482bfc0936693d73f34dd3"
+    },
+    "release-v1/source/src/latent_register/toolbench_schema.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/toolbench_schema.py",
+      "sha256": "53ed22cffe530ee2884dec44824aa194a8190bedb941c8e317a559f60f19e2bc"
+    },
+    "release-v1/source/src/latent_register/structured_memory.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/structured_memory.py",
+      "sha256": "8005911486ab3e519299e55460aa6ea353d4030867f52720cf01c2658203eedf"
+    },
+    "release-v1/source/src/latent_register/model.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/model.py",
+      "sha256": "987373769a057d626a9c1bab9fe2084b99e8a4afce7a70c1dcfa35fdf56ab8a4"
+    },
+    "release-v1/source/src/latent_register/toolbench_topk.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/toolbench_topk.py",
+      "sha256": "d6847a5a7095d783bb167e62921ae9f8ba23c2df16a924ddecd5fc8fd8548f5e"
+    },
+    "release-v1/source/src/latent_register/toolbench_lora.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/toolbench_lora.py",
+      "sha256": "c5b791a3d1853c2870855e91ab4d0058b8bfbdcf7f6ee8061f67008de6aebf4e"
+    },
+    "release-v1/source/src/latent_register/schema_curriculum.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/schema_curriculum.py",
+      "sha256": "0eb9b2be551bd44f1c75e70043acfe5a003c3f6be67529067653b0b81702868a"
+    },
+    "release-v1/source/src/latent_register/toolbench_rl.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/toolbench_rl.py",
+      "sha256": "d638a6528ad2a3755a4634d1fccf94ac245ee236a30e73998c728cdd8c33bae9"
+    },
+    "release-v1/source/src/latent_register/action_credit.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/action_credit.py",
+      "sha256": "17d3989c86b176e0eb35cc496a3144598755e4455aa76a7fc4558332c10005d5"
+    },
+    "release-v1/source/src/latent_register/toolbench_curriculum.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/toolbench_curriculum.py",
+      "sha256": "677a2333df28bbe9b751fa0e4ef5d01e1240a392c36bd7a3869f27f223bb08f9"
+    },
+    "release-v1/source/src/latent_register/selection_candidates.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/selection_candidates.py",
+      "sha256": "dbf5060d68eaea3bc8435d04436e14ef039e94009af4dd3602ab15f64350950a"
+    },
+    "release-v1/source/src/latent_register/toolbench_shared_export.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/toolbench_shared_export.py",
+      "sha256": "ce800898acf711a13f1a38e28a34411d03474a9f48fa53c852421d18729fbc6c"
+    },
+    "release-v1/source/src/latent_register/toolbench_eval_format.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/toolbench_eval_format.py",
+      "sha256": "b51e99662ee7bd6eb216221f7d5e9141635c01d7a8473e61f1e9be7cf4e96e5e"
+    },
+    "release-v1/source/src/latent_register/toolbench_http.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/toolbench_http.py",
+      "sha256": "14dfb2fb7fc7123ad6f465f6ac04b305ee724a732004f8aaf9bca6e0d068c9a1"
+    },
+    "release-v1/source/src/latent_register/run_toolbench_e2e.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/run_toolbench_e2e.py",
+      "sha256": "4850f73aac1bc8e4336a7d370871b44a617f128229f80b2c20c6529340c65741"
+    },
+    "release-v1/source/src/latent_register/topk_transition.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/topk_transition.py",
+      "sha256": "3df0dc87781ba19bbf96b5babe93d4d3c9fa6051d3ed7d71b1b5155d58941ce1"
+    },
+    "release-v1/source/src/latent_register/selection_transition.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/selection_transition.py",
+      "sha256": "16b9753a341011896b750a91687f03f66b4943fb9db0294ea276e27a51092246"
+    },
+    "release-v1/source/src/latent_register/toolbench_continuation.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/toolbench_continuation.py",
+      "sha256": "d254a44d61e2dcc9a11c1695b3d71e5a1bd055a63ad975437addce77baca70d5"
+    },
+    "release-v1/source/src/latent_register/hybrid_transition.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/hybrid_transition.py",
+      "sha256": "9781084499911431ff70a9119837e13203d6d1cf7bf2a45e47110c3c80c108f4"
+    },
+    "release-v1/source/src/latent_register/toolbench_fac_diagnostics.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/toolbench_fac_diagnostics.py",
+      "sha256": "aa30b68ec078c112110b6dc726cddc08a1fa4c9cbc5cef3182da144ba8088b83"
+    },
+    "release-v1/source/src/latent_register/__init__.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/__init__.py",
+      "sha256": "832917d71afee1816a9214bc6f83cf2ddb7ed18b073749680c3a7ba953139adb"
+    },
+    "release-v1/tests/test_toolbench_agent.py": {
+      "source": "worktrees/active/tooltoken-native-e2e-recovery-v14-20260910/tests/test_toolbench_agent.py",
+      "sha256": "3b54c07a4cf4ae6b364cb2fabbb83f56652c0d1b2e9a763293e5ce9745d8a08b"
+    },
+    "release-v1/source/src/latent_register/train_toolbench_agent.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/train_toolbench_agent.py",
+      "sha256": "493f4f6e94d3c4d46f016bbfaddc2aec9da177c86f79007f750a2c9fcdbd7227"
+    },
+    "release-v1/source/src/latent_register/prepare_toolbench_agent.py": {
+      "source": "experiments/toolbench-native-e2e-adaptation-v1-20260910/executions/full-train-v42-task-state-miniagent-v1-20260921/release-v1/source/src/latent_register/prepare_toolbench_agent.py",
+      "sha256": "543395b2236752b42690950d6885fbe91bedf842b599b0de88fa325618b04213"
+    }
+  }
+}

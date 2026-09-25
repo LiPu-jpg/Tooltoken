@@ -1,5 +1,12 @@
 # Native Late-Bound Tool Registration
 
+**Ours end-to-end source export (2026-09-25):** the portable
+[v42 evaluation and regression package](experiments/ours-e2e-v42/README.md)
+contains the task-state agent, FP32 memory/document reader variants, and the
+opt-in completion-v6 controller. It includes source hashes and an offline CPU
+check command. This versioned snapshot has its own import path; the root
+package below remains the historical implementation.
+
 **ToolBench memory v2:** see [the structured compiler, schema supervision,
 8/16-slot recipes and development diagnostics](docs/TOOLBENCH_MEMORY_V2.md).
 The original [v1 training audit](docs/TOOLBENCH_AGENT_TRAINING.md) describes

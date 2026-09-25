@@ -1,0 +1,9 @@
+{
+  "service_url": "http://127.0.0.1:8000/virtual",
+  "backend_kind": "stabletoolbench_virtual",
+  "backend_revision": "REPLACE_WITH_VERIFIED_BACKEND_REVISION",
+  "toolbench_key_env": "TOOLBENCH_KEY",
+  "allow_empty_toolbench_key": false,
+  "timeout_seconds": 120,
+  "max_response_bytes": 1048576
+}
